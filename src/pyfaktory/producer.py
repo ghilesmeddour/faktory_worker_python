@@ -5,6 +5,11 @@ from .client import Client
 class Producer:
     """
     Faktory Producer.
+
+    Parameters
+    ----------
+    client : pyfaktory.Client
+        Faktory client whose `role` must be either 'producer' or 'both'.
     """
     def __init__(self, client: Client) -> None:
         self.client = client
