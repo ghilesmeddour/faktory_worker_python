@@ -12,6 +12,10 @@ class Producer:
         Faktory client whose `role` must be either 'producer' or 'both'.
     """
     def __init__(self, client: Client) -> None:
+        if client.role == 'consumer':
+            raise Exception(
+                "Provided client is exclusively consumer and can't act as a producer"
+            )
         self.client = client
 
     def push_job(self,
