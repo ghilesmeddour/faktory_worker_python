@@ -162,6 +162,11 @@ class Client:
                 f'Producer Client cannot enter {new_state} stage')
 
         old_state = self.state
+
+        if old_state == new_state:
+            self.logger.info(f'client state is {old_state}, not changed')
+            return False
+
         self.state = new_state
         self.logger.info(
             f'Client state changed from {old_state} to {new_state}')
