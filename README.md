@@ -21,20 +21,20 @@ This repository provides Python Client (Consumer and Producer) for the [Faktory]
           |                                      |
           |                                      |
           |                                      |
-+---------------------------------------------------------+     
-|         .                Faktory               .        |            
-|         .                Client                .        |  
-|         .                                      .        |          
-|   +-----------------+               +-----------------+ |
-|   |                 |               |                 | |
-|   |    Producer     |               |    Consumer     | |
-|   |     pushes      |               |    (Worker)     | |
-|   |      jobs       |               |     fetches     | |
-|   |                 |               |       jobs      | |
-|   |                 |               |                 | |
-|   +-----------------+               +-----------------+ |          
-|                                                         |            
-+---------------------------------------------------------+            
++-----------------------------------------------------------+     
+|         .                Faktory               .          |            
+|         .                Client                .          |  
+|         .                                      .          |          
+|   +-----------------+               +-----------------+   |
+|   |                 |               |                 |   |
+|   |    Producer     |               |    Consumer     |   |
+|   |     pushes      |               |    (Worker)     |   |
+|   |      jobs       |               |     fetches     |   |
+|   |                 |               |       jobs      |   |
+|   |                 |               |                 |   |
+|   +-----------------+               +-----------------+   |          
+|                                                           |            
++-----------------------------------------------------------+            
 ```
 
 - [Server](https://github.com/contribsys/faktory/) - the Faktory daemon which stores background jobs in queues to be processed by Workers.
