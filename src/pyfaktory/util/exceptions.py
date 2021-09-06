@@ -5,7 +5,7 @@ class FaktroyWorkProtocolError(Exception):
     pass
 
 
-class FaktoryWorkerError(Exception):
+class FaktoryConsumerError(Exception):
     """
     Faktory Worker Error.
     """
