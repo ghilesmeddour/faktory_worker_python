@@ -1,8 +1,10 @@
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
+import threading
 import hashlib
 import logging
 import socket
+import time
 import uuid
 import json
 import os
@@ -47,6 +49,9 @@ class Client:
         Labels that apply to the worker using this client. These labels 
         will be displayed in Faktory webui. 
         If the client's role is `producer`, this argument is ignored.
+    beat_period : int, default 15
+        The period in seconds for sending BEAT to the server to recognize state 
+        changes initiated by the server. Period must be between 5 and 60 seconds.
 
     Notes
     -----
@@ -57,7 +62,8 @@ class Client:
                  role: str = 'producer',
                  timeout: Optional[int] = 30,
                  worker_id: Optional[str] = None,
-                 labels: List[str] = C.DEFAULT_LABELS) -> None:
+                 labels: List[str] = C.DEFAULT_LABELS,
+                 beat_period: int = C.RECOMMENDED_BEAT_PERIOD) -> None:
         self.logger = logging.getLogger(name='FaktoryClient')
 
         if role not in ['consumer', 'producer', 'both']:
@@ -90,6 +96,15 @@ class Client:
                     'Worker id must be a string of at least 8 characters')
 
             self.worker_id = worker_id or uuid.uuid4().hex
+
+            if not (C.MIN_ALLOOWABLE_BEAT_PERIOD <= beat_period <=
+                    C.MAX_ALLOOWABLE_BEAT_PERIOD):
+                ValueError(
+                    'Beat period is {beat_period}, but should be between {C.MIN_ALLOOWABLE_BEAT_PERIOD} and {C.MAX_ALLOOWABLE_BEAT_PERIOD}'
+                )
+            self.beat_period = beat_period
+            self.rss_kb = None
+            self.heartbeat_thread = None
 
     def connect(self) -> bool:
         self.logger.info(f'Client lifecycle state is {self.state}')
@@ -149,7 +164,16 @@ class Client:
         old_state = self.state
         self.state = new_state
         self.logger.info(
-            f'Client lifecycle state changed from {old_state} to {new_state}')
+            f'Client state changed from {old_state} to {new_state}')
+
+        if self.role != 'producer':
+            # If client acts as consumer, start heartbeating
+            # when IDENTIFIED state is entered
+            if self.state == State.IDENTIFIED:
+                self.heartbeat_thread = threading.Thread(
+                    target=self._heartbeat, args=())
+                self.heartbeat_thread.start()
+
         return True
 
     def _send(self, command: str):
@@ -181,6 +205,14 @@ class Client:
         if faktory_response[0] == '-':
             raise FaktroyWorkProtocolError(
                 f'Error received from Faktory server: {faktory_response}')
+
+    def _heartbeat(self):
+        while self.state in [State.IDENTIFIED, State.QUIET]:
+            self.logger.info(
+                f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
+            )
+            self._beat(rss_kb=self.rss_kb)
+            time.sleep(self.beat_period)
 
     ####
     ## Client commands
