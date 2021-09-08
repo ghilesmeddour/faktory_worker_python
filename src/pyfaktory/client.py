@@ -277,18 +277,14 @@ class Client:
         return msg
 
     @valid_states_cmd([State.IDENTIFIED, State.QUIET, State.TERMINATING])
-    def _end(self) -> bool:
+    def _end(self):
         """
         The END command is used to signal to the server that it wishes
         to terminate the connection.
         """
         command = f'END{C.CRLF}'
-        # TODO: check OK response (Faktory Server PR)
-        # msg = self._send_and_receive(command)
-        # self._raise_error(msg)
         self._send(command)
         self._set_state(State.END)
-        return True
 
     ####
     ## Producer commands
