@@ -20,37 +20,37 @@ class Client:
     """
     Faktory Client.
 
-    This is an implementation of FWP (Faktory Work Protocol) client. 
-    
-    FWP allows a client to interact with a Faktory work server. It permits 
-    a client to authenticate to a Faktory server, submit units of work for 
-    later execution, and/or fetch units of work for processing and subsequently 
+    This is an implementation of FWP (Faktory Work Protocol) client.
+
+    FWP allows a client to interact with a Faktory work server. It permits
+    a client to authenticate to a Faktory server, submit units of work for
+    later execution, and/or fetch units of work for processing and subsequently
     report their execution result.
 
     Parameters
     ----------
     faktory_url : Optional[str]
-        URL of the Faktory server with which the client will establish 
+        URL of the Faktory server with which the client will establish
         a connection. Following format is expected: `tcp://:password@host:port`.
-        If the url is not given, the client will try to find it 
+        If the url is not given, the client will try to find it
         in the environment variable `FAKTORY_URL`.
     role : {{'producer', 'consumer', 'both'}}, default 'both'
-        The role of the client, some commands are only available for one role 
-        or another. For the client to act as both a consumer and a producer use 
+        The role of the client, some commands are only available for one role
+        or another. For the client to act as both a consumer and a producer use
         `'both'`.
     timeout : Optional[int], default 30
-        Timeout on blocking socket operations. If zero is given, the socket 
-        is put in non-blocking mode. If `None` is given, the socket is put 
+        Timeout on blocking socket operations. If zero is given, the socket
+        is put in non-blocking mode. If `None` is given, the socket is put
         in blocking mode.
     worker_id : Optional[str]
-        Globally unique identifier for the worker that will use this client. 
+        Globally unique identifier for the worker that will use this client.
         If the client's role is `producer`, this argument is ignored.
     labels : List[str], default ['python']
-        Labels that apply to the worker using this client. These labels 
-        will be displayed in Faktory webui. 
+        Labels that apply to the worker using this client. These labels
+        will be displayed in Faktory webui.
         If the client's role is `producer`, this argument is ignored.
     beat_period : int, default 15
-        The period in seconds for sending BEAT to the server to recognize state 
+        The period in seconds for sending BEAT to the server to recognize state
         changes initiated by the server. Period must be between 5 and 60 seconds.
 
     Notes
@@ -226,8 +226,8 @@ class Client:
     @valid_states_cmd([State.NOT_IDENTIFIED])
     def _hello(self, pwdhash=None) -> bool:
         """
-        The HELLO command MUST be the first command issued by any client when 
-        connecting to a Faktory server. It is sent in response to the server's 
+        The HELLO command MUST be the first command issued by any client when
+        connecting to a Faktory server. It is sent in response to the server's
         initial HI message.
         """
         client_info = {
@@ -260,7 +260,7 @@ class Client:
     @valid_states_cmd([State.IDENTIFIED])
     def _flush(self) -> bool:
         """
-        FLUSH allows to clear all info from Faktory's internal database. 
+        FLUSH allows to clear all info from Faktory's internal database.
         It uses Redis's FLUSHDB command under the covers.
         """
         command = f'FLUSH{C.CRLF}'
