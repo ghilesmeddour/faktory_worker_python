@@ -12,9 +12,13 @@ DEFAULT_QUEUES = ['default']
 ## Producer
 ####
 
-# seconds
-RECOMMENDED_BEAT_PERIOD = 15
-# seconds
-MIN_ALLOOWABLE_BEAT_PERIOD = 5
-# seconds
-MAX_ALLOOWABLE_BEAT_PERIOD = 60
+RECOMMENDED_BEAT_PERIOD = 15  # seconds
+MIN_ALLOOWABLE_BEAT_PERIOD = 5  # seconds
+MAX_ALLOOWABLE_BEAT_PERIOD = 60  # seconds
+
+####
+## Consumer
+####
+
+DEFAULT_GRACE_PERIOD = 25
+MAX_GRACE_PERIOD = 30
