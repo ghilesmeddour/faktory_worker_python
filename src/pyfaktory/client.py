@@ -106,6 +106,7 @@ class Client:
             self.rss_kb = None
             self.heartbeat_thread = None
 
+    @valid_states_cmd([State.DISCONNECTED])
     def connect(self) -> bool:
         self.logger.info(f'Client lifecycle state is {self.state}')
 
@@ -149,6 +150,7 @@ class Client:
 
         return True
 
+    @valid_states_cmd([State.END])
     def disconnect(self):
         self.log.info("Disconnecting...")
         self.sock.close()
