@@ -26,7 +26,7 @@ class Producer:
                  reserve_for: int = 1800,
                  at: str = '',
                  retry: int = 25,
-                 backtrace: int = 0,
+                 backtrace: int = 5,
                  custom: Optional[Dict] = None) -> bool:
         """
         Push a job to Faktory server.
@@ -51,7 +51,7 @@ class Producer:
             Number of times to retry this job if it fails.
             0 discards the failed job, -1 saves the failed
             job to the dead set.
-        backtrace : int, default 0
+        backtrace : int, default 5
             Number of lines of FAIL information to preserve.
         custom : dict, default None
             Provides additional context to the worker executing the job.
