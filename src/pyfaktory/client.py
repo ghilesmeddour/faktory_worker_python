@@ -270,7 +270,6 @@ class Client:
 
     @valid_states_cmd([State.IDENTIFIED])
     def _info(self) -> str:
-        # TODO: complete FWD
         command = f'INFO{C.CRLF}'
         msg = self._send_and_receive(command)
         self._raise_error(msg)
