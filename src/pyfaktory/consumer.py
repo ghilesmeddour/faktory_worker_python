@@ -1,5 +1,4 @@
 from concurrent.futures.process import BrokenProcessPool
-from concurrent.futures import TimeoutError
 from typing import Callable, Dict, List, Optional
 import multiprocessing
 import traceback
@@ -13,7 +12,7 @@ import sys
 from pebble import ProcessPool, sighandler
 
 from .client import Client
-from .util.enums import LifecycleEventType, State
+from .util.enums import State
 from .util import constants as C
 from .util import helper
 
