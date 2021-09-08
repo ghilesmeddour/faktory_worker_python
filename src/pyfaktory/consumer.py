@@ -90,13 +90,18 @@ class Consumer:
 
         self.concurrency = concurrency
         self.grace_period = grace_period
-        
+
         self.pool = ProcessPool(max_workers=self.concurrency)
-        
+
         self.job_handlers: Dict[str, Callable] = {}
 
         self.pending_tasks_count = 0
         self.lock_pending_tasks_count = multiprocessing.Lock()
+
+    @sighandler((signal.SIGINT, signal.SIGTERM))
+    def handle_sigterm(self, signum, frame):
+        self.logger.info('Termination signal received!')
+        raise KeyboardInterrupt
 
     def register(self, name: str, fn: Callable):
         """
@@ -108,8 +113,111 @@ class Consumer:
         self.job_handlers[name] = fn
         self.logger.info(f"Registered handler for jobtype: {name}")
 
+    def get_job_handler(self, name: str) -> Callable:
+        try:
+            return self.job_handlers[name]
+        except KeyError:
+            self.logger.error(f"'{name}' is not a registered job handler")
+            # One could consider just failing the job and continue running,
+            # but we are not doing it here because it is expected that all
+            # jobtypes are registered upon process startup.
+            raise ValueError(f"'{name}' has no registered handler")
+
+    def get_queues(self) -> List[str]:
+        if self.priority == 'strict':
+            return self.queues
+        elif self.priority == 'uniform':
+            random.shuffle(self.queues)
+            return self.queues
+        else:
+            return helper.weighted_shuffle(self.queues, self.weights)
+
+    def task_done(self, future):
+        self.logger.info(f'Task done callback called for job {future.job_id}')
+        try:
+            result = future.result()
+            self.logger.info(f'Task (job {future.job_id}) returned {result}')
+            self.client._ack(jid=future.job_id)
+        except Exception:
+            err_type, err_value, err_traceback = sys.exc_info()
+            self.logger.info(
+                f'Task (job {future.job_id}) raised {err_type}: {err_value}')
+            self.client._fail(jid=future.job_id,
+                              errtype=err_type.__name__,
+                              message=str(err_value),
+                              backtrace=traceback.format_tb(
+                                  err_traceback, limit=future.backtrace))
+        finally:
+            with self.lock_pending_tasks_count:
+                self.pending_tasks_count -= 1
+
     def run(self):
         """
+        Start the consumer.
+
+        When this method is called, the fetching and execution of the jobs 
+        starts. The job handlers must have been registered beforehand.
+
+        This method is blocking, it only stops in the event of an error 
+        (only main loop errors, errors that occur in the handlers cause the job 
+        to fail and are reported to Faktory Server) or when a signal is received 
+        (CTRL-C or from the Faktory Web UI).
+
+        At the beginning of the shutdown, the worker gives itself a grace period 
+        to stop properly and notify the last information to the Faktory server.
+        If a second signal is received, this causes an immediate shutdown.
         """
-        while True:
-            pass
+        self.logger.info('Entering run loop..')
+        # TODO: check this
+        while self.client.state in [State.IDENTIFIED, State.QUIET]:
+            try:
+                if self.pending_tasks_count < self.concurrency:
+                    queues_tmp = self.get_queues()
+                    self.logger.info(f'Fetching from queues: {queues_tmp}')
+                    # If no jobs are found, _fatch will block for up
+                    # to 2 seconds on the first queue provided.
+                    job = self.client._fetch(queues_tmp)
+
+                    if job:
+                        # TODO: check
+                        # timeout=job.get('reserve_for', None)
+                        job_handler = self.get_job_handler(job.get('jobtype'))
+
+                        future = self.pool.schedule(job_handler,
+                                                    args=job.get('args'))
+
+                        with self.lock_pending_tasks_count:
+                            self.pending_tasks_count += 1
+
+                        future.job_id = job.get("jid")
+                        future.backtrace = job.get("backtrace", 0)
+                        future.add_done_callback(self.task_done)
+                else:
+                    # TODO: maybe use Event object instead of sleep
+                    time.sleep(0.1)
+            except KeyboardInterrupt:
+                self.logger.info('')
+                # TODO: check
+                self.logger.info('')
+                break
+            except Exception as err:
+                self.logger.error(f'Shutting down due to an error: {err}')
+                # TODO: check
+                break
+
+        self.logger.info(
+            f'Run loop exited, client state is {self.client.state}')
+
+        try:
+            self.pool.close()
+            self.pool.join(timeout=self.grace_period)
+        except KeyboardInterrupt:
+            self.logger.info('')
+        # TODO: add except Exception
+
+        self.client._end()
+
+        sys.exit(1)
+
+
+# TODO: set rss_kb (sys.getsizeof?)
