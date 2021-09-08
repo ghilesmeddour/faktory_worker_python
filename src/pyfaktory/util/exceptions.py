@@ -1,11 +1,18 @@
-class FaktroyWorkProtocolError(Exception):
+class FaktoryError(Exception):
+    """
+    Base Faktory Exception.
+    """
+    pass
+
+
+class FaktroyWorkProtocolError(FaktoryError):
     """
     Faktroy Work Protocol Error.
     """
     pass
 
 
-class FaktoryConsumerError(Exception):
+class FaktoryConsumerError(FaktoryError):
     """
     Faktory Worker Error.
     """
