@@ -21,14 +21,38 @@ class Consumer:
     """
     Faktory Consumer (Worker).
 
+    It fetches units of work (jobs) from the server and executes them.
+    It retrieves the jobs from the queues, and decides how to execute them
+    based on the jobtype.
+
+    A handler must be attached to each jobtype before the consumer is launched.
+
     Parameters
     ----------
     client : pyfaktory.Client
-        Faktory Client.
-    concurrency : int, default 1
-        Number of processes to start.
-    beat_period : int, default 15
-        Lorem.
+        Faktory client. Client `role` must be either 'consumer' or 'both'.
+    queues : List[str], default ['default']
+        The queues from which the consumer will fetch jobs. If you provide
+        no `queues`, the consumer will process `default` queue.
+    priority : {{'strict', 'uniform', 'weighted'}}, default 'uniform'
+        Priority indicates in which queue order the jobs should be fetched 
+        first. With `strict` priority, the worker always fetches from the first 
+        queue and will only try to fetch from the next once the previous queue 
+        is empty. With `uniform`, each queue has an equal chance of being 
+        fetched first. With `weighted`, queues have a different probability 
+        of being fetched. These probabilities are specified with `weights` 
+        argument.
+    weights : Optional[List[float]], default None
+        Probability of the queues to be fetched. This parameter is required 
+        when `priority` is `weighted` (and ignored in other cases), and must 
+        have the same number of elements as `queues`.
+    concurrency : int, default 4
+        Number of jobs to run at the same time.
+    grace_period : int, default 25
+        Grace period between the beginning of a shutdown and its end. 
+        This period is used to give the job some time to finish, to stop them 
+        properly and to notify the server. This period should never be longer 
+        than 30 seconds.
     """
     def __init__(self,
                  client: Client,
