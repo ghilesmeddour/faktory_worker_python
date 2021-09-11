@@ -6,7 +6,7 @@ import socket
 import threading
 import time
 import uuid
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
 from .util import constants as C
@@ -23,8 +23,8 @@ class Client:
     This is an implementation of FWP (Faktory Work Protocol) client.
 
     FWP allows a client to interact with a Faktory work server. It permits
-    a client to authenticate to a Faktory server, submit units of work (jobs) 
-    for later execution, and/or fetch units of work for processing and 
+    a client to authenticate to a Faktory server, submit units of work (jobs)
+    for later execution, and/or fetch units of work for processing and
     subsequently report their execution result.
 
     Parameters
@@ -78,9 +78,9 @@ class Client:
         parsed_url = urlparse(faktory_url)
         self.host = parsed_url.hostname
         self.port = parsed_url.port or C.DEFAULT_PORT
-        self.password = parsed_url.password
+        self.password = str(parsed_url.password)
 
-        self.sock = None
+        self.sock: socket.socket
         self.timeout = timeout
         self.state = State.DISCONNECTED
 
@@ -106,7 +106,7 @@ class Client:
                 )
             self.beat_period = beat_period
             self.rss_kb = None
-            self.heartbeat_thread = None
+            self.heartbeat_thread: threading.Thread
 
     def __enter__(self):
         self.connect()
@@ -151,11 +151,11 @@ class Client:
                 self.password) + str.encode(password_hash_salt)
             for _ in range(password_hash_iterations):
                 password_hash = hashlib.sha256(password_hash).digest()
-            password_hash = password_hash.hex()
+            password_hash_str = password_hash.hex()
         else:
             self.logger.info('Password is not required')
 
-        _ = self._hello(pwdhash=password_hash)
+        _ = self._hello(pwdhash=password_hash_str)
 
         return True
 
@@ -240,7 +240,7 @@ class Client:
         connecting to a Faktory server. It is sent in response to the server's
         initial HI message.
         """
-        client_info = {
+        client_info: Dict[str, Any] = {
             # Protocol version number
             "v": 2,
         }
@@ -258,8 +258,7 @@ class Client:
         if pwdhash:
             client_info['pwdhash'] = pwdhash
 
-        client_info = json.dumps(client_info)
-        command = f'HELLO {client_info}{C.CRLF}'
+        command = f'HELLO {json.dumps(client_info)}{C.CRLF}'
         msg = self._send_and_receive(command)
 
         self._raise_error(msg)
@@ -353,7 +352,7 @@ class Client:
     @consumer_cmd
     @valid_states_cmd([State.IDENTIFIED, State.QUIET])
     def _beat(self, rss_kb: Optional[int] = None) -> bool:
-        args = {
+        args: Dict[str, Any] = {
             'wid': self.worker_id,
         }
 

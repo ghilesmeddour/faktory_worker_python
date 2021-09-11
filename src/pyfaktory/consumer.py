@@ -5,7 +5,6 @@ import signal
 import sys
 import time
 import traceback
-from concurrent.futures.process import BrokenProcessPool
 from typing import Callable, Dict, List, Optional
 
 from pebble import ProcessPool, sighandler
@@ -96,7 +95,7 @@ class Consumer:
         self.lock_pending_tasks_count = multiprocessing.Lock()
 
     @sighandler((signal.SIGTERM))
-    def handle_sigterm(signum, frame):
+    def handle_sigterm(*_):
         raise KeyboardInterrupt
 
     def register(self, name: str, fn: Callable):

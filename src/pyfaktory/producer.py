@@ -67,7 +67,7 @@ class Producer:
             jid = uuid.uuid4().hex
 
         # Mandatory fields
-        job = {
+        job: Dict[str, Any] = {
             'jid': jid,
             'jobtype': jobtype,
             'args': args,

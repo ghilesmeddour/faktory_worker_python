@@ -21,6 +21,7 @@ class RESP:
         except Exception:
             return -1, ''
 
+    @staticmethod
     def is_message_complete(msg: str):
         if len(msg) < 2:
             return False
