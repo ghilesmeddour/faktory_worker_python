@@ -106,6 +106,13 @@ class Client:
             self.rss_kb = None
             self.heartbeat_thread = None
 
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, *args):
+        self.disconnect()
+
     @valid_states_cmd([State.DISCONNECTED])
     def connect(self) -> bool:
         self.logger.info(f'Client lifecycle state is {self.state}')
