@@ -5,7 +5,6 @@ import traceback
 import logging
 import random
 import signal
-import math
 import time
 import sys
 
@@ -15,6 +14,8 @@ from .client import Client
 from .util.enums import State
 from .util import constants as C
 from .util import helper
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Consumer:
@@ -64,7 +65,7 @@ class Consumer:
         self.logger = logging.getLogger(name='FaktoryConsumer')
 
         if client.role == 'producer':
-            raise Exception(
+            raise ValueError(
                 "Provided client is exclusively producer and can't act as a consumer"
             )
         self.client = client
@@ -83,8 +84,6 @@ class Consumer:
                     'Priority is weighted but weights are not provided')
             elif len(weights) != len(self.queues):
                 raise ValueError('Weights and queues lengths mismatch')
-            elif abs(math.fsum(weights) - 1.) > 0.0001:
-                raise ValueError('Weights do not sum to 1')
             else:
                 self.weights = weights
 
@@ -99,8 +98,7 @@ class Consumer:
         self.lock_pending_tasks_count = multiprocessing.Lock()
 
     @sighandler((signal.SIGINT, signal.SIGTERM))
-    def handle_sigterm(self, signum, frame):
-        self.logger.info('Termination signal received!')
+    def handle_sigterm(signum, frame):
         raise KeyboardInterrupt
 
     def register(self, name: str, fn: Callable):
@@ -161,7 +159,7 @@ class Consumer:
         This method is blocking, it only stops in the event of an error 
         (only main loop errors, errors that occur in the handlers cause the job 
         to fail and are reported to Faktory Server) or when a signal is received 
-        (CTRL-C or from the Faktory Web UI).
+        (Ctrl-C or from the Faktory Web UI).
 
         At the beginning of the shutdown, the worker gives itself a grace period 
         to stop properly and notify the last information to the Faktory server.
@@ -196,27 +194,25 @@ class Consumer:
                     # TODO: maybe use Event object instead of sleep
                     time.sleep(0.1)
             except KeyboardInterrupt:
-                self.logger.info('')
-                # TODO: check
-                self.logger.info('')
+                self.logger.info(
+                    'First KeyboardInterrupt, stopping after grace period')
                 break
             except Exception as err:
                 self.logger.error(f'Shutting down due to an error: {err}')
                 # TODO: check
                 break
 
-        self.logger.info(
-            f'Run loop exited, client state is {self.client.state}')
+        self.logger.info(f'Run loop exited, state is {self.client.state}')
+        self.logger.info(f'Grace period of {self.grace_period} seconds...')
+        self.logger.info(f'Press Ctrl-C again to stop immediately')
 
         try:
             self.pool.close()
             self.pool.join(timeout=self.grace_period)
         except KeyboardInterrupt:
-            self.logger.info('')
-        # TODO: add except Exception
+            self.logger.info('Second KeyboardInterrupt, stopping immediately')
 
-        self.client._end()
-
+        self.logger.info(f'End of the grace period. Stopping.')
         sys.exit(1)
 
 
