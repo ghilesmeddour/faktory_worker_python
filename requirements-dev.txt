@@ -3,3 +3,6 @@ mypy
 coverage
 vulture
 twine
+pytest
+numpy
+xarray
