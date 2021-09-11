@@ -146,6 +146,18 @@ with Client(faktory_url='tcp://localhost:7419', role='consumer') as client:
     consumer.run()
 ```
 
+Use `priority` to indicates in which queue order the jobs should be fetched 
+first.
+
+```python
+# With strict priority, there is a risk of starvation
+consumer = Consumer(client=client, queues=['critical', 'default', 'bulk'], priority='strict')
+# Each queue has an equal chance of being fetched first
+consumer = Consumer(client=client, queues=['critical', 'default', 'bulk'], priority='uniform')
+# Weights must be specified
+consumer = Consumer(client=client, queues=['critical', 'default', 'bulk'], priority='weighted', weights=[0.6, 0.3, 0.1])
+```
+
 ## Example
 
 Find examples in `./examples`.
