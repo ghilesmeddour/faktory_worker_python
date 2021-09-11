@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.0",
     author="Ghiles Meddour",
     author_email="ghiles.meddour@munic.io",
-    description="Faktory worker for Python",
+    description="Faktory Client Python (Producer and Consumer/Worker)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ghilesmeddour/faktory_worker_python",
