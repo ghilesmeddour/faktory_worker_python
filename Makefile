@@ -9,6 +9,9 @@ dead-code-check:
 test:
 	pytest
 
+import-sort:
+	isort .
+
 type-check:
 	mypy src --ignore-missing-imports
 
