@@ -128,7 +128,24 @@ consumer.run()
 
 ## Example
 
-// TODO
+Find examples in `./examples`.
+
+- Start the Faktory server.
+```
+/usr/bin/faktory
+```
+
+- Launch a producer.
+```
+python examples/fproducer.py
+```
+
+- Launch a consumer
+```
+python examples/fconsumer.py
+```
+
+- Look at what is happening in the logs and in the [Faktory Web UI](http://localhost:7420/)
 
 ## Contribute
 
