@@ -114,7 +114,7 @@ with Client(faktory_url='tcp://localhost:7419') as client:
     # Use client
 ```
 
-Use `role` argument to say how you want to use the client. his argument has 
+Use `role` argument to say how you want to use the client. This argument has 
 three possible values: 'consumer', 'producer' or 'both'.
 
 ```
