@@ -109,7 +109,7 @@ client.disconnect()
 
 Client is a context manager, so you can use `with` statement.
 
-```
+```python
 with Client(faktory_url='tcp://localhost:7419') as client:
     # Use client
 ```
@@ -117,7 +117,7 @@ with Client(faktory_url='tcp://localhost:7419') as client:
 Use `role` argument to say how you want to use the client. This argument has 
 three possible values: 'consumer', 'producer' or 'both'.
 
-```
+```python
 # A client that acts as both a consumer and a producer.
 client = Client(faktory_url='tcp://localhost:7419', role='both')
 ```
@@ -172,12 +172,12 @@ Find examples in `./examples`.
 python examples/fproducer.py
 ```
 
-- Launch a consumer
+- Launch a consumer.
 ```
 python examples/fconsumer.py
 ```
 
-- Look at what is happening in the logs and in the [Faktory Web UI](http://localhost:7420/)
+- Look at what is happening in the logs and in the [Faktory Web UI](http://localhost:7420/).
 
 ## Contribute
 
@@ -188,7 +188,7 @@ If you encounter a problem, please report it.
 In addition to the description of your problem, report the server and client
 versions.
 
-```
+```python
 pyfaktory.__version__
 ```
 ```
@@ -197,9 +197,12 @@ pyfaktory.__version__
 
 Reproduce your problem while increasing the level of debugging for both the
 server and the client, and report the logs.
-```
+```python
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.DEBUG,
+                    datefmt='%Y-%m-%d %H:%M:%S')
 ```
 ```
 /usr/bin/faktory -l debug
