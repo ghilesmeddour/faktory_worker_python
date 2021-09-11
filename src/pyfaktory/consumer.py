@@ -15,8 +15,6 @@ from .util import constants as C
 from .util import helper
 from .util.enums import State
 
-logging.basicConfig(level=logging.DEBUG)
-
 
 class Consumer:
     """
@@ -97,7 +95,7 @@ class Consumer:
         self.pending_tasks_count = 0
         self.lock_pending_tasks_count = multiprocessing.Lock()
 
-    @sighandler((signal.SIGINT, signal.SIGTERM))
+    @sighandler((signal.SIGTERM))
     def handle_sigterm(signum, frame):
         raise KeyboardInterrupt
 
@@ -169,6 +167,13 @@ class Consumer:
         # TODO: check this
         while self.client.state in [State.IDENTIFIED, State.QUIET]:
             try:
+                if self.client.state == State.QUIET:
+                    self.logger.info(
+                        f'State is {self.client.state}, not fetching further jobs'
+                    )
+                    time.sleep(self.client.beat_period)
+                    continue
+
                 if self.pending_tasks_count < self.concurrency:
                     queues_tmp = self.get_queues()
                     self.logger.info(f'Fetching from queues: {queues_tmp}')
@@ -190,6 +195,8 @@ class Consumer:
                         future.job_id = job.get("jid")
                         future.backtrace = job.get("backtrace", 0)
                         future.add_done_callback(self.task_done)
+                    else:
+                        self.logger.debug('Queues are empty.')
                 else:
                     # TODO: maybe use Event object instead of sleep
                     time.sleep(0.1)
@@ -197,9 +204,9 @@ class Consumer:
                 self.logger.info(
                     'First KeyboardInterrupt, stopping after grace period')
                 break
-            except Exception as err:
-                self.logger.error(f'Shutting down due to an error: {err}')
-                # TODO: check
+            except Exception:
+                self.logger.error(
+                    f'Shutting down due to an error: {traceback.format_exc()}')
                 break
 
         self.logger.info(f'Run loop exited, state is {self.client.state}')
