@@ -19,5 +19,5 @@ class RESP:
 # http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
 def weighted_shuffle(items, weights):
     order = sorted(range(len(items)),
-                   key=lambda i: random.random()**(1.0 / weights[i]))
+                   key=lambda i: random.random()**weights[i])
     return [items[i] for i in order]
