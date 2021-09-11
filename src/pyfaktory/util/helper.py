@@ -1,5 +1,7 @@
 import random
 
+from . import constants as C
+
 
 class RESP:
     """
@@ -12,8 +14,26 @@ class RESP:
     @staticmethod
     def parse_bulk_string(s: str):
         assert s[0] == '$'
-        n_bytes, data = s[1:].split('\r\n')
-        return int(n_bytes), data
+
+        try:
+            n_bytes, data = s[1:].split('\r\n')
+            return int(n_bytes), data
+        except Exception:
+            return -1, ''
+
+    def is_message_complete(msg: str):
+        if len(msg) < 2:
+            return False
+
+        if not msg.endswith(C.CRLF):
+            return False
+
+        if msg[0] == '$' and msg[1] != '-':
+            nb_crlf = 2
+        else:
+            nb_crlf = 1
+
+        return msg.count(C.CRLF) == nb_crlf
 
 
 # http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
