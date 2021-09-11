@@ -138,8 +138,8 @@ Use a worker to pull jobs from Faktory server and execute them.
 
 ```python
 def adder(x, y):
-    logging.info("%d + %d = %d", x, y, x + y)
-    
+    logging.info(f"{x} + {y} = {x + y}")
+
 with Client(faktory_url='tcp://localhost:7419', role='consumer') as client:
     consumer = Consumer(client=client, queues=['default'], concurrency=1)
     consumer.register('adder', adder)

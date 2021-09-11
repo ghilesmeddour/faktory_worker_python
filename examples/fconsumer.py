@@ -10,7 +10,7 @@ time.sleep(1)
 
 
 def adder(x, y):
-    logging.info("%d + %d = %d", x, y, x + y)
+    logging.info(f"{x} + {y} = {x + y}")
 
 
 with Client(faktory_url='tcp://localhost:7419', role='consumer') as client:
