@@ -84,6 +84,8 @@ class Client:
         self.timeout = timeout
         self.state = State.DISCONNECTED
 
+        self.rlock = threading.RLock()
+
         # Consumer specific fields
         if self.role != 'producer':
             self.labels = labels
@@ -159,7 +161,8 @@ class Client:
 
     def disconnect(self):
         if self.state != State.END:
-            self._end()
+            with self.rlock:
+                self._end()
 
         self.logger.info("Disconnecting...")
         self.sock.close()
@@ -199,13 +202,7 @@ class Client:
     def _receive(self) -> str:
         msg = self.sock.recv(1024).decode('utf-8')
 
-        # Bulk Strings contain two CRLF
-        if msg[0] == '$':
-            nb_crlf = 2
-        else:
-            nb_crlf = 1
-
-        while msg.count(C.CRLF) != nb_crlf:
+        while not helper.RESP.is_message_complete(msg):
             msg += self.sock.recv(1024).decode('utf-8')
 
         msg = msg.strip()
@@ -213,9 +210,10 @@ class Client:
         return msg
 
     def _send_and_receive(self, command: str) -> str:
-        self._send(command)
-        msg = self._receive()
-        return msg
+        with self.rlock:
+            self._send(command)
+            msg = self._receive()
+            return msg
 
     def _raise_error(self, faktory_response):
         if faktory_response[0] == '-':
@@ -224,10 +222,11 @@ class Client:
 
     def _heartbeat(self):
         while self.state in [State.IDENTIFIED, State.QUIET]:
-            self.logger.info(
-                f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
-            )
-            self._beat(rss_kb=self.rss_kb)
+            with self.rlock:
+                self.logger.info(
+                    f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
+                )
+                self._beat(rss_kb=self.rss_kb)
             time.sleep(self.beat_period)
 
     ####
@@ -359,10 +358,10 @@ class Client:
         }
 
         if self.state == State.QUIET:
-            args['current_state'] == 'quiet'
+            args['current_state'] = 'quiet'
         # TODO: check if this meet FWP
         elif self.state == State.TERMINATING:
-            args['current_state'] == 'terminate'
+            args['current_state'] = 'terminate'
 
         if rss_kb:
             args['rss_kb'] = rss_kb
@@ -377,7 +376,7 @@ class Client:
                 return True
         # Bulk String
         elif msg[0] == '$':
-            _, data = helper.parse_bulk_string(msg)
+            _, data = helper.RESP.parse_bulk_string(msg)
             data = json.loads(data)
             if data['state'] == 'quiet':
                 self._set_state(State.QUIET)
