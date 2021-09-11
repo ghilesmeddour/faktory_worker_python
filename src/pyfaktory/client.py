@@ -157,9 +157,11 @@ class Client:
 
         return True
 
-    @valid_states_cmd([State.END])
     def disconnect(self):
-        self.log.info("Disconnecting...")
+        if self.state != State.END:
+            self._end()
+
+        self.logger.info("Disconnecting...")
         self.sock.close()
         self._set_state(State.DISCONNECTED)
 
@@ -313,12 +315,12 @@ class Client:
     @consumer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _fetch(self, queues: List[str] = []) -> Optional[Dict]:
-        command = f'FETCH {json.dumps(queues)}{C.CRLF}'
+        command = f'FETCH {" ".join(queues)}{C.CRLF}'
         msg = self._send_and_receive(command)
 
         self._raise_error(msg)
 
-        n_bytes, data = helper.parse_bulk_string(msg)
+        n_bytes, data = helper.RESP.parse_bulk_string(msg)
 
         if n_bytes == -1:
             return None
