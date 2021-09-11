@@ -39,8 +39,8 @@ This repository provides Python Client (Consumer and Producer) for the [Faktory]
 
 - [Server](https://github.com/contribsys/faktory/) - the Faktory daemon which stores background jobs in queues to be processed by Workers.
 - Client - an entity that communicates with the Faktory server using the [FWP](https://github.com/contribsys/faktory/blob/master/docs/protocol-specification.md). A single client can act as both a consumer and a producer.
-- Consumer (or Worker) - a client that fetches work units (jobs) from the server for execution. 
-- Producer - a client that issues new work units to the server. 
+- Consumer (or Worker) - a client that fetches work units (jobs) from the server for execution.
+- Producer - a client that issues new work units to the server.
 
 This library tries to implement the [FWP](https://github.com/contribsys/faktory/blob/master/docs/protocol-specification.md) as well as possible. If you notice any inconsistencies, please report them.
 
@@ -66,7 +66,7 @@ For the installation of faktory, please refer to [the official documentation](ht
 After installation, you can run it locally.
 
 ```console
-$ /usr/bin/faktory 
+$ /usr/bin/faktory
 Faktory 1.5.2
 Copyright © 2021 Contributed Systems LLC
 Licensed under the GNU Affero Public License 3.0
@@ -94,27 +94,42 @@ Faktory in production mode requires a password by default since version 0.7.0.
 Import `pyfaktory`.
 
 ```python
-import pyfaktory
+from pyfaktory import Client, Consumer, Producer
 ```
 
 A single client can act as both a consumer and a producer.
 
 ```python
-client = pyfaktory.Client(faktory_url='tcp://localhost:7419')
+client = Client(faktory_url='tcp://localhost:7419')
 client.connect()
 # Now you can use the client
 # At the end, diconnect the client
 client.disconnect()
 ```
 
-Use `role` argument to say how you want to use the client.
+Client is a context manager, so you can use `with` statement.
+
+```
+with Client(faktory_url='tcp://localhost:7419') as client:
+    # Use client
+```
+
+Use `role` argument to say how you want to use the client. his argument has 
+three possible values: 'consumer', 'producer' or 'both'.
+
+```
+# A client that acts as both a consumer and a producer.
+client = Client(faktory_url='tcp://localhost:7419', role='both')
+```
 
 ### Producer
 
 Use the client to push jobs.
 
 ```python
-producer = pyfaktory.Producer()
+with Client(faktory_url='tcp://localhost:7419', role='producer') as client:
+    producer = Producer(client=client)
+    producer.push_job(jobtype='adder', args=(5, 4))
 ```
 
 ### Consumer (Worker)
@@ -122,8 +137,13 @@ producer = pyfaktory.Producer()
 Use a worker to pull jobs from Faktory server and execute them.
 
 ```python
-consumer = pyfaktory.Consumer()
-consumer.run()
+def adder(x, y):
+    logging.info("%d + %d = %d", x, y, x + y)
+    
+with Client(faktory_url='tcp://localhost:7419', role='consumer') as client:
+    consumer = Consumer(client=client, queues=['default'], concurrency=1)
+    consumer.register('adder', adder)
+    consumer.run()
 ```
 
 ## Example
@@ -153,17 +173,17 @@ python examples/fconsumer.py
 
 If you encounter a problem, please report it.
 
-In addition to the description of your problem, report the server and client 
+In addition to the description of your problem, report the server and client
 versions.
 
 ```
-pyfaktory.__version__ 
+pyfaktory.__version__
 ```
 ```
 /usr/bin/faktory -v
 ```
 
-Reproduce your problem while increasing the level of debugging for both the 
+Reproduce your problem while increasing the level of debugging for both the
 server and the client, and report the logs.
 ```
 import logging
@@ -175,4 +195,4 @@ logging.basicConfig(level=logging.DEBUG)
 
 ### PRs
 
-Please, feel free to make PRs.
+Please, feel free to make PRs. (Take a look at [TODO.md](./TODO.md))
