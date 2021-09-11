@@ -23,9 +23,9 @@ class Client:
     This is an implementation of FWP (Faktory Work Protocol) client.
 
     FWP allows a client to interact with a Faktory work server. It permits
-    a client to authenticate to a Faktory server, submit units of work for
-    later execution, and/or fetch units of work for processing and subsequently
-    report their execution result.
+    a client to authenticate to a Faktory server, submit units of work (jobs) 
+    for later execution, and/or fetch units of work for processing and 
+    subsequently report their execution result.
 
     Parameters
     ----------
