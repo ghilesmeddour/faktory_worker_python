@@ -4,7 +4,9 @@ import time
 
 from pyfaktory import Client, Consumer
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.DEBUG,
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 time.sleep(1)
 
