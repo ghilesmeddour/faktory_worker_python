@@ -36,23 +36,23 @@ class Consumer:
         The queues from which the consumer will fetch jobs. If you provide
         no `queues`, the consumer will process `default` queue.
     priority : {{'strict', 'uniform', 'weighted'}}, default 'uniform'
-        Priority indicates in which queue order the jobs should be fetched 
-        first. With `strict` priority, the worker always fetches from the first 
-        queue and will only try to fetch from the next once the previous queue 
-        is empty. With `uniform`, each queue has an equal chance of being 
-        fetched first. With `weighted`, queues have a different probability 
-        of being fetched. These probabilities are specified with `weights` 
+        Priority indicates in which queue order the jobs should be fetched
+        first. With `strict` priority, the worker always fetches from the first
+        queue and will only try to fetch from the next once the previous queue
+        is empty. With `uniform`, each queue has an equal chance of being
+        fetched first. With `weighted`, queues have a different probability
+        of being fetched. These probabilities are specified with `weights`
         argument.
     weights : Optional[List[float]], default None
-        Probability of the queues to be fetched. This parameter is required 
-        when `priority` is `weighted` (and ignored in other cases), and must 
+        Probability of the queues to be fetched. This parameter is required
+        when `priority` is `weighted` (and ignored in other cases), and must
         have the same number of elements as `queues`.
     concurrency : int, default 4
         Number of jobs to run at the same time.
     grace_period : int, default 25
-        Grace period between the beginning of a shutdown and its end. 
-        This period is used to give the job some time to finish, to stop them 
-        properly and to notify the server. This period should never be longer 
+        Grace period between the beginning of a shutdown and its end.
+        This period is used to give the job some time to finish, to stop them
+        properly and to notify the server. This period should never be longer
         than 30 seconds.
     """
     def __init__(self,
@@ -153,15 +153,15 @@ class Consumer:
         """
         Start the consumer.
 
-        When this method is called, the fetching and execution of the jobs 
+        When this method is called, the fetching and execution of the jobs
         starts. The job handlers must have been registered beforehand.
 
-        This method is blocking, it only stops in the event of an error 
-        (only main loop errors, errors that occur in the handlers cause the job 
-        to fail and are reported to Faktory Server) or when a signal is received 
+        This method is blocking, it only stops in the event of an error
+        (only main loop errors, errors that occur in the handlers cause the job
+        to fail and are reported to Faktory Server) or when a signal is received
         (Ctrl-C or from the Faktory Web UI).
 
-        At the beginning of the shutdown, the worker gives itself a grace period 
+        At the beginning of the shutdown, the worker gives itself a grace period
         to stop properly and notify the last information to the Faktory server.
         If a second signal is received, this causes an immediate shutdown.
         """
