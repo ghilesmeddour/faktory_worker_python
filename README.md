@@ -1,11 +1,5 @@
 # Faktory Client Python ~~faktory_worker_python~~
 
-🚧 **Work In Progress..**
-
-🔴 **Don't use in production**
-
-⚠️ **Will be ready in the very next few days**
-
 This repository provides Python Client (Consumer and Producer) for the [Faktory](https://github.com/contribsys/faktory/) background job server.
 
 ```
