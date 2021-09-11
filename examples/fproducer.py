@@ -1,7 +1,7 @@
 # fproducer.py
+import logging
 import random
 import time
-import logging
 
 from pyfaktory import Client, Producer
 

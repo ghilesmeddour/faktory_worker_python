@@ -1,6 +1,6 @@
 # fworker.py
-import time
 import logging
+import time
 
 from pyfaktory import Client, Consumer
 

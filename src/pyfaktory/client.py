@@ -1,19 +1,19 @@
-from typing import Dict, List, Optional
-from urllib.parse import urlparse
-import threading
 import hashlib
+import json
 import logging
+import os
 import socket
+import threading
 import time
 import uuid
-import json
-import os
+from typing import Dict, List, Optional
+from urllib.parse import urlparse
 
 from .util import constants as C
-from .util.exceptions import FaktroyWorkProtocolError
+from .util import helper
 from .util.decorators import *
 from .util.enums import State
-from .util import helper
+from .util.exceptions import FaktroyWorkProtocolError
 
 
 class Client:

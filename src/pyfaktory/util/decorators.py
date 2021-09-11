@@ -1,8 +1,8 @@
 from functools import wraps
 from typing import List
 
-from .exceptions import FaktroyWorkProtocolError
 from .enums import State
+from .exceptions import FaktroyWorkProtocolError
 
 
 def producer_cmd(fn):
