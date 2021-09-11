@@ -7,13 +7,13 @@ dead-code-check:
 	vulture src --min-confidence 70
 
 test:
-	python -m unittest discover ${TESTS_DIR}
+	pytest
 
 type-check:
 	mypy src --ignore-missing-imports
 
 coverage:
-	coverage run --source=src -m unittest discover ${TESTS_DIR}
+	coverage run --source=src -m pytest
 	coverage report -m
 	coverage html
 
