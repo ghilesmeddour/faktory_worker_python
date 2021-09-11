@@ -1,4 +1,6 @@
 from typing import Any, Dict, List, Optional
+import uuid
+
 from .client import Client
 
 
@@ -13,14 +15,14 @@ class Producer:
     """
     def __init__(self, client: Client) -> None:
         if client.role == 'consumer':
-            raise Exception(
+            raise ValueError(
                 "Provided client is exclusively consumer and can't act as a producer"
             )
         self.client = client
 
     def push_job(self,
-                 jid: str,
                  jobtype: str,
+                 jid: Optional[str] = None,
                  args: List[Any] = [],
                  queue: str = 'default',
                  reserve_for: int = 1800,
@@ -61,6 +63,9 @@ class Producer:
         bool
             Indicates if the push was successful.
         """
+        if not jid:
+            jid = uuid.uuid4().hex
+
         # Mandatory fields
         job = {
             'jid': jid,
@@ -71,6 +76,8 @@ class Producer:
         if reserve_for < 60:
             raise ValueError(
                 f'`reserve_for` == {reserve_for}, but must be greater than 60')
+
+        # TODO: add `at` validation
 
         # Optional fields
         job.update({
