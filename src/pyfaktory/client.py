@@ -78,7 +78,7 @@ class Client:
         parsed_url = urlparse(faktory_url)
         self.host = parsed_url.hostname
         self.port = parsed_url.port or C.DEFAULT_PORT
-        self.password = str(parsed_url.password)
+        self.password = parsed_url.password
 
         self.sock: socket.socket
         self.timeout = timeout
@@ -147,15 +147,17 @@ class Client:
             password_hash_iterations = msg_args['i']
             password_hash_salt = msg_args['s']
             self.logger.info('Hashing password...')
-            password_hash = str.encode(
-                self.password) + str.encode(password_hash_salt)
+            password_hash = str.encode(str(
+                self.password)) + str.encode(password_hash_salt)
             for _ in range(password_hash_iterations):
                 password_hash = hashlib.sha256(password_hash).digest()
-            password_hash_str = password_hash.hex()
         else:
             self.logger.info('Password is not required')
 
-        _ = self._hello(pwdhash=password_hash_str)
+        if password_hash:
+            _ = self._hello(pwdhash=password_hash.hex())
+        else:
+            _ = self._hello()
 
         return True
 
