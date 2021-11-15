@@ -26,4 +26,7 @@ setuptools.setup(
     install_requires=[
         "pebble",
     ],
+    extras_require={
+        "sentry": ["sentry-sdk"],
+    },
 )

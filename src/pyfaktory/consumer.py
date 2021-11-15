@@ -51,6 +51,8 @@ class Consumer:
         This period is used to give the job some time to finish, to stop them
         properly and to notify the server. This period should never be longer
         than 30 seconds.
+    sentry_capture_exception : bool, default False
+        If `True` capture exceptions using Sentry before failling jobs.
     """
     def __init__(self,
                  client: Client,
@@ -58,7 +60,8 @@ class Consumer:
                  priority: str = 'uniform',
                  weights: Optional[List[float]] = None,
                  concurrency: int = 4,
-                 grace_period: int = C.DEFAULT_GRACE_PERIOD) -> None:
+                 grace_period: int = C.DEFAULT_GRACE_PERIOD,
+                 sentry_capture_exception: bool = False) -> None:
         self.logger = logging.getLogger(name='FaktoryConsumer')
 
         if client.role == 'producer':
@@ -86,6 +89,7 @@ class Consumer:
 
         self.concurrency = concurrency
         self.grace_period = grace_period
+        self.sentry_capture_exception = sentry_capture_exception
 
         self.pool = ProcessPool(max_workers=self.concurrency)
 
@@ -133,7 +137,11 @@ class Consumer:
             result = future.result()
             self.logger.info(f'Task (job {future.job_id}) returned {result}')
             self.client._ack(jid=future.job_id)
-        except Exception:
+        except Exception as err:
+            if self.sentry_capture_exception:
+                import sentry_sdk
+                sentry_sdk.capture_exception(err)
+
             err_type, err_value, err_traceback = sys.exc_info()
             self.logger.info(
                 f'Task (job {future.job_id}) raised {err_type}: {err_value}')

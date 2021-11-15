@@ -152,6 +152,15 @@ consumer = Consumer(client=client, queues=['critical', 'default', 'bulk'], prior
 consumer = Consumer(client=client, queues=['critical', 'default', 'bulk'], priority='weighted', weights=[0.6, 0.3, 0.1])
 ```
 
+### Capture exceptions using Sentry
+
+To capture exceptions using Sentry before failling jobs 
+set `sentry_capture_exception` argument to `True`.
+
+```python
+consumer = Consumer(client=client, sentry_capture_exception=True)
+```
+
 ## Example
 
 Find examples in `./examples`.
