@@ -57,6 +57,7 @@ class Client:
     -----
     `FWP specification <https://github.com/contribsys/faktory/blob/master/docs/protocol-specification.md>`_
     """
+
     def __init__(self,
                  faktory_url: Optional[str] = None,
                  role: str = 'producer',
@@ -304,6 +305,38 @@ class Client:
     @valid_states_cmd([State.IDENTIFIED])
     def _push(self, work_unit: Dict) -> bool:
         command = f'PUSH {json.dumps(work_unit)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @producer_cmd
+    @valid_states_cmd([State.IDENTIFIED])
+    def _pushb(self, work_units: List[Dict]) -> bool:
+        command = f'PUSHB {json.dumps(work_units)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @producer_cmd
+    @valid_states_cmd([State.IDENTIFIED])
+    def _batch_new(self, batch: Dict) -> str:
+        command = f'BATCH NEW {json.dumps(batch)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return msg
+
+    @producer_cmd
+    @valid_states_cmd([State.IDENTIFIED])
+    def _batch_commit(self, bid: str) -> bool:
+        command = f'BATCH COMMIT {bid}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @producer_cmd
+    @valid_states_cmd([State.IDENTIFIED])
+    def _batch_open(self, bid: str) -> bool:
+        command = f'BATCH OPEN {bid}{C.CRLF}'
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
