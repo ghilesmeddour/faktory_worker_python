@@ -23,9 +23,7 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.8",
-    install_requires=[
-        "pebble",
-    ],
+    install_requires=["pebble", "rfc3339-validator"],
     extras_require={
         "sentry": ["sentry-sdk"],
     },
