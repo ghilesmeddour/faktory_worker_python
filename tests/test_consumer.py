@@ -8,6 +8,7 @@ from pyfaktory import Client, Consumer
 
 
 class TestConsumerConstructor:
+
     def test_init(self):
         with pytest.raises(ValueError):
             _ = Consumer(client=Client(role='producer'))
@@ -19,6 +20,7 @@ class TestConsumerConstructor:
 
 
 class TestConsumerGetQueues:
+
     def test_get_queues_strict(self):
         consumer = Consumer(client=Client(role='consumer'),
                             priority='strict',

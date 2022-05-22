@@ -6,6 +6,7 @@ from .exceptions import FaktroyWorkProtocolError
 
 
 def producer_cmd(fn):
+
     @wraps(fn)
     def wrapper(self, *args, **kw):
         if self.role == 'consumer':
@@ -18,6 +19,7 @@ def producer_cmd(fn):
 
 
 def consumer_cmd(fn):
+
     @wraps(fn)
     def wrapper(self, *args, **kw):
         if self.role == 'producer':
@@ -30,7 +32,9 @@ def consumer_cmd(fn):
 
 
 def valid_states_cmd(states: List[State]):
+
     def decorator(fn):
+
         @wraps(fn)
         def wrapper(self, *args, **kw):
             if self.state not in states:

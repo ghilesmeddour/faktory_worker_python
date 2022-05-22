@@ -11,6 +11,7 @@ class RESP:
     -----
     `RESP <https://redis.io/topics/protocol>`_
     """
+
     @staticmethod
     def parse_bulk_string(s: str):
         assert s[0] == '$'

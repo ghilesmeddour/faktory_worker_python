@@ -2,6 +2,7 @@ from pyfaktory import Client
 
 
 class TestClientConstructor:
+
     def test_init(self):
         faktory_url = 'tcp://my-server:7419'
         role = 'both'

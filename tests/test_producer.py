@@ -4,6 +4,7 @@ from pyfaktory import Client, Producer
 
 
 class TestProducerConstructor:
+
     def test_init(self):
         with pytest.raises(ValueError):
             _ = Producer(client=Client(role='consumer'))
@@ -13,6 +14,7 @@ class TestProducerConstructor:
 
 
 class TestProducerMethods:
+
     def test_job_fields(self):
         required_fields = {'jid', 'jobtype', 'args'}
         optional_fields = {
