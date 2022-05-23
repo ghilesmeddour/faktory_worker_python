@@ -25,10 +25,10 @@ class Producer:
         self.client = client
 
     def push(self, job: Job) -> bool:
-        return self.client._push(job.dict())
+        return self.client._push(job.dict(exclude_none=True))
 
     def push_bulk(self, jobs: List[Job]) -> Dict:
-        return self.client._pushb([j.dict() for j in jobs])
+        return self.client._pushb([j.dict(exclude_none=True) for j in jobs])
 
     # TODO
     def batch_new(self):
