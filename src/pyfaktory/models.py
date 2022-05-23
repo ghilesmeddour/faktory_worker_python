@@ -1,11 +1,11 @@
 import uuid
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, conint, validator
+from pydantic import BaseModel, Extra, conint, validator
 from rfc3339_validator import validate_rfc3339
 
 
-class Job(BaseModel):
+class Job(BaseModel, extra=Extra.forbid):
     jid: str = None
     jobtype: str
     args: List[Any]
@@ -14,7 +14,7 @@ class Job(BaseModel):
     at: str = ''
     retry: conint(ge=-1) = 25
     backtrace: conint(ge=0) = 5
-    custom: Optional[Dict]
+    custom: Optional[Dict] = None
 
     @validator('jid', pre=True, always=True)
     def set_random_jid(cls, jid):
@@ -27,13 +27,13 @@ class Job(BaseModel):
         return at
 
 
-class TargetJob(BaseModel):
+class TargetJob(BaseModel, extra=Extra.forbid):
     jobtype: str
     args: List[Any]
     queue: str = 'default'
 
 
-class Batch(BaseModel):
+class Batch(BaseModel, extra=Extra.forbid):
     parent_bid: Optional[str]
     description: Optional[str]
     success: Optional[TargetJob]
