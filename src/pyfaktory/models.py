@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Extra, conint, validator
@@ -38,3 +39,32 @@ class Batch(BaseModel, extra=Extra.forbid):
     description: Optional[str]
     success: Optional[TargetJob]
     complete: Optional[TargetJob]
+
+
+class JobFilter(BaseModel, extra=Extra.forbid):
+    jids: Optional[List[str]]
+    regexp: Optional[str]
+    jobtype: Optional[str]
+
+
+class Cmd(str, Enum):
+    clear = 'clear'
+    kill = 'kill'
+    discard = 'discard'
+    requeue = 'requeue'
+
+
+class Target(str, Enum):
+    retries = 'retries'
+    scheduled = 'scheduled'
+    dead = 'dead'
+
+
+class MutateOperation(BaseModel):
+    cmd: Cmd
+    target: Target
+    filter: Optional[JobFilter] = None
+
+    class Config:
+        use_enum_values = True
+        extra = Extra.forbid
