@@ -9,6 +9,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
+from .models import MutateOperation
 from .util import constants as C
 from .util import helper
 from .util.decorators import *
@@ -171,6 +172,9 @@ class Client:
         self.sock.close()
         self._set_state(State.DISCONNECTED)
 
+    def mutate(self, operation: MutateOperation) -> bool:
+        return self._mutate(operation.dict(exclude_none=True))
+
     def _set_state(self, new_state: State) -> bool:
         if self.role == 'producer' and new_state in [
                 State.QUIET, State.TERMINATING
@@ -296,6 +300,21 @@ class Client:
         command = f'END{C.CRLF}'
         self._send(command)
         self._set_state(State.END)
+
+    @valid_states_cmd([State.IDENTIFIED])
+    def _mutate(self, operation: Dict) -> bool:
+        op = json.dumps(operation, separators=(',', ':'))
+        command = f'MUTATE {op}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @valid_states_cmd([State.IDENTIFIED])
+    def _batch_status(self, bid: str) -> str:
+        command = f'BATCH STATUS {bid}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return msg
 
     ####
     ## Producer commands
