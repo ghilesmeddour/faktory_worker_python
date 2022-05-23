@@ -1,10 +1,9 @@
-import uuid
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 from pyfaktory.models import Job
 
 from .client import Client
-from .models import Job
+from .models import Batch, Job
 
 
 class Producer:
@@ -27,17 +26,14 @@ class Producer:
     def push(self, job: Job) -> bool:
         return self.client._push(job.dict(exclude_none=True))
 
-    def push_bulk(self, jobs: List[Job]) -> Dict:
+    def push_bulk(self, jobs: List[Job]) -> bool:
         return self.client._pushb([j.dict(exclude_none=True) for j in jobs])
 
-    # TODO
-    def batch_new(self):
-        pass
+    def batch_new(self, batch: Batch) -> bool:
+        return self.client._batch_new(batch.dict(exclude_none=True))
 
-    # TODO
-    def batch_open(self):
-        pass
+    def batch_open(self, bid: str) -> bool:
+        return self.client._batch_open(bid)
 
-    # TODO
-    def batch_commit(self):
-        pass
+    def batch_commit(self, bid: str) -> bool:
+        return self.client._batch_commit(bid)
