@@ -1,6 +1,7 @@
 from .client import Client
 from .consumer import Consumer
-from .models import Batch, Job, TargetJob
+from .models import (Batch, Cmd, Job, JobFilter, MutateOperation, Target,
+                     TargetJob)
 from .producer import Producer
 from .util.exceptions import *
 
