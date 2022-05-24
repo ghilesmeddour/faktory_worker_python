@@ -75,11 +75,3 @@ class TestClientConstructor:
         assert consumer_specific_fields.issubset(client_both.__dict__)
         assert consumer_specific_fields.issubset(client_consumer.__dict__)
         assert not consumer_specific_fields.issubset(client_producer.__dict__)
-
-
-class TestClientConnection:
-    # TODO: add some unit tests
-    pass
-
-
-# TODO: add more unit tests

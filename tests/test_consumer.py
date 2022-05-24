@@ -16,8 +16,6 @@ class TestConsumerConstructor:
         _ = Consumer(client=Client(role='consumer'))
         _ = Consumer(client=Client(role='both'))
 
-    # TODO: add more unit tests
-
 
 class TestConsumerGetQueues:
 
@@ -75,6 +73,3 @@ class TestConsumerGetQueues:
         assert count_table.loc['a', 0] - 0.5 < 0.1
         assert count_table.loc['b', 0] - 0.3 < 0.1
         assert count_table.loc['c', 0] - 0.2 < 0.1
-
-
-# TODO: add more unit tests
