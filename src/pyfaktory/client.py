@@ -330,11 +330,11 @@ class Client:
 
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
-    def _pushb(self, work_units: List[Dict]) -> bool:
+    def _pushb(self, work_units: List[Dict]) -> str:
         command = f'PUSHB {json.dumps(work_units)}{C.CRLF}'
         msg = self._send_and_receive(command)
         self._raise_error(msg)
-        return True
+        return msg
 
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
