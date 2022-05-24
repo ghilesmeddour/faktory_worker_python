@@ -175,6 +175,11 @@ class Client:
     def mutate(self, operation: MutateOperation) -> bool:
         return self._mutate(operation.dict(exclude_none=True))
 
+    def info(self) -> Dict:
+        msg = self._info()
+        _, data = helper.RESP.parse_bulk_string(msg)
+        return json.loads(data)
+
     def _set_state(self, new_state: State) -> bool:
         if self.role == 'producer' and new_state in [
                 State.QUIET, State.TERMINATING
