@@ -26,8 +26,10 @@ class Producer:
     def push(self, job: Job) -> bool:
         return self.client._push(job.dict(exclude_none=True))
 
-    def push_bulk(self, jobs: List[Job]) -> bool:
-        return self.client._pushb([j.dict(exclude_none=True) for j in jobs])
+    def push_bulk(self, jobs: List[Job]) -> Dict:
+        msg = self.client._pushb([j.dict(exclude_none=True) for j in jobs])
+        _, data = helper.RESP.parse_bulk_string(msg)
+        return json.loads(data)
 
     def batch_new(self, batch: Batch) -> bool:
         return self.client._batch_new(batch.dict(exclude_none=True))
