@@ -1,9 +1,9 @@
+import json
 from typing import Dict, List
-
-from pyfaktory.models import Job
 
 from .client import Client
 from .models import Batch, Job
+from .util import helper
 
 
 class Producer:

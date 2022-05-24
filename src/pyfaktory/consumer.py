@@ -54,6 +54,7 @@ class Consumer:
     sentry_capture_exception : bool, default False
         If `True` capture exceptions using Sentry before failling jobs.
     """
+
     def __init__(self,
                  client: Client,
                  queues: List[str] = C.DEFAULT_QUEUES,
