@@ -145,6 +145,8 @@ class Consumer:
             err_type, err_value, err_traceback = sys.exc_info()
             self.logger.info(
                 f'Task (job {future.job_id}) raised {err_type}: {err_value}')
+            self.logger.debug(f'Task (job {future.job_id}) backtrace: ',
+                              traceback.format_tb(err_traceback))
             self.client._fail(jid=future.job_id,
                               errtype=err_type.__name__,
                               message=str(err_value),
