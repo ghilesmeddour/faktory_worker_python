@@ -1,3 +1,7 @@
+## Version 0.2.1 (2022-06-08)
+- Add queue remove command ([added in Faktory server v1.6.1](https://github.com/contribsys/faktory/blob/main/Changes.md#161))
+- Add queue pausing commands
+
 ## Version 0.2.0 (2022-05-25)
 - Add Batch support
 - Add `push_bulk` ([added in Faktory server v1.6.0](https://github.com/contribsys/faktory/commit/84945864873474910cd564ed1aed4f740d04bf08))
