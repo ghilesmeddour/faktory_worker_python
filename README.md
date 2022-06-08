@@ -239,6 +239,41 @@ client.mutate(op)
 client.disconnect()
 ```
 
+### Queues
+
+**Pausing**
+
+Queues may be paused (no job can be fetched from them while paused) or unpaused 
+(resume fetching).
+
+```python
+# Pause a list of queues
+client.queue_pause(queues=['bulk', 'another_queue'])
+
+# Pause all queues
+client.queue_pause(all_queues=True)
+
+
+# Unpause a list of queues
+client.queue_unpause(queues=['bulk'])
+
+# Unpause all queues
+client.queue_unpause(all_queues=True)
+```
+
+**Remove**
+
+Queues can be removed which deletes all jobs within them. It does not stop 
+currently executing jobs from those queues.
+
+```python
+# Remove a list of queues
+client.queue_remove(queues=['bulk'])
+
+# Remove all queues
+client.queue_remove(all_queues=True)
+```
+
 ### Batch (untested)
 
 Refer to [documentation](https://github.com/contribsys/faktory/wiki/Ent-Batches).
