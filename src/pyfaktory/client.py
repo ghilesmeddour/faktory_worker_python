@@ -175,6 +175,21 @@ class Client:
     def mutate(self, operation: MutateOperation) -> bool:
         return self._mutate(operation.dict(exclude_none=True))
 
+    def queue_remove(self,
+                     queues: Optional[List[Dict]] = None,
+                     all_queues: bool = False) -> bool:
+        return self._queue_remove(queues=queues, all_queues=all_queues)
+
+    def queue_pause(self,
+                    queues: Optional[List[Dict]] = None,
+                    all_queues: bool = False) -> bool:
+        return self._queue_pause(queues=queues, all_queues=all_queues)
+
+    def queue_unpause(self,
+                      queues: Optional[List[Dict]] = None,
+                      all_queues: bool = False) -> bool:
+        return self._queue_unpause(queues=queues, all_queues=all_queues)
+
     def info(self) -> Dict:
         msg = self._info()
         _, data = helper.RESP.parse_bulk_string(msg)
@@ -320,6 +335,42 @@ class Client:
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return msg
+
+    @valid_states_cmd([State.IDENTIFIED])
+    def _queue_remove(self,
+                      queues: Optional[List[Dict]] = None,
+                      all_queues: bool = False) -> bool:
+        if all_queues:
+            command = f'QUEUE REMOVE *{C.CRLF}'
+        else:
+            command = f'QUEUE REMOVE {json.dumps(queues)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @valid_states_cmd([State.IDENTIFIED])
+    def _queue_pause(self,
+                     queues: Optional[List[Dict]] = None,
+                     all_queues: bool = False) -> bool:
+        if all_queues:
+            command = f'QUEUE PAUSE *{C.CRLF}'
+        else:
+            command = f'QUEUE PAUSE {json.dumps(queues)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
+
+    @valid_states_cmd([State.IDENTIFIED])
+    def _queue_unpause(self,
+                       queues: Optional[List[Dict]] = None,
+                       all_queues: bool = False) -> bool:
+        if all_queues:
+            command = f'QUEUE UNPAUSE *{C.CRLF}'
+        else:
+            command = f'QUEUE UNPAUSE {json.dumps(queues)}{C.CRLF}'
+        msg = self._send_and_receive(command)
+        self._raise_error(msg)
+        return True
 
     ####
     ## Producer commands
