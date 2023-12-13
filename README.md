@@ -61,7 +61,7 @@ After installation, you can run it locally.
 
 ```console
 $ /usr/bin/faktory
-Faktory 1.6.0
+Faktory 1.8.0
 ```
 
 You can use a password for the Faktory server via the environment variable `FAKTORY_PASSWORD`. Note if this value starts with a `/`, then it is considered a pointer to a file on the filesystem with the password. By default `/etc/faktory/password` is used.
