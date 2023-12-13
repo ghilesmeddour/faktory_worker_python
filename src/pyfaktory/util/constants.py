@@ -2,11 +2,11 @@
 ## Client
 ####
 
-CRLF = '\r\n'
-DEFAULT_FAKTORY_URL = 'tcp://localhost:7419'
+CRLF = "\r\n"
+DEFAULT_FAKTORY_URL = "tcp://localhost:7419"
 DEFAULT_PORT = 7419
-DEFAULT_LABELS = ['python']
-DEFAULT_QUEUES = ['default']
+DEFAULT_LABELS = ["python"]
+DEFAULT_QUEUES = ["default"]
 
 ####
 ## Producer

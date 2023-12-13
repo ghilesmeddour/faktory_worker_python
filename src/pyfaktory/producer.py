@@ -17,7 +17,7 @@ class Producer:
     """
 
     def __init__(self, client: Client) -> None:
-        if client.role == 'consumer':
+        if client.role == "consumer":
             raise ValueError(
                 "Provided client is exclusively consumer and can't act as a producer"
             )

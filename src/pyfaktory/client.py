@@ -59,23 +59,25 @@ class Client:
     `FWP specification <https://github.com/contribsys/faktory/blob/master/docs/protocol-specification.md>`_
     """
 
-    def __init__(self,
-                 faktory_url: Optional[str] = None,
-                 role: str = 'producer',
-                 timeout: Optional[int] = 30,
-                 worker_id: Optional[str] = None,
-                 labels: List[str] = C.DEFAULT_LABELS,
-                 beat_period: int = C.RECOMMENDED_BEAT_PERIOD) -> None:
-        self.logger = logging.getLogger(name='FaktoryClient')
+    def __init__(
+        self,
+        faktory_url: Optional[str] = None,
+        role: str = "producer",
+        timeout: Optional[int] = 30,
+        worker_id: Optional[str] = None,
+        labels: List[str] = C.DEFAULT_LABELS,
+        beat_period: int = C.RECOMMENDED_BEAT_PERIOD,
+    ) -> None:
+        self.logger = logging.getLogger(name="FaktoryClient")
 
-        if role not in ['consumer', 'producer', 'both']:
+        if role not in ["consumer", "producer", "both"]:
             raise ValueError(
                 f"Unexpected role ({role}), role should be 'consumer', 'producer' or 'both'"
             )
         self.role = role
 
         if not faktory_url:
-            faktory_url = os.environ.get('FAKTORY_URL', C.DEFAULT_FAKTORY_URL)
+            faktory_url = os.environ.get("FAKTORY_URL", C.DEFAULT_FAKTORY_URL)
 
         parsed_url = urlparse(faktory_url)
         self.host = parsed_url.hostname
@@ -90,22 +92,25 @@ class Client:
         self.rlock = threading.RLock()
 
         # Consumer specific fields
-        if self.role != 'producer':
+        if self.role != "producer":
             self.labels = labels
 
             if worker_id is None:
                 self.logger.warning(
-                    f'No worker id has been given, a random id will be used')
+                    f"No worker id has been given, a random id will be used"
+                )
             elif len(worker_id) < 8:
-                raise ValueError(
-                    'Worker id must be a string of at least 8 characters')
+                raise ValueError("Worker id must be a string of at least 8 characters")
 
             self.worker_id = worker_id or uuid.uuid4().hex
 
-            if not (C.MIN_ALLOOWABLE_BEAT_PERIOD <= beat_period <=
-                    C.MAX_ALLOOWABLE_BEAT_PERIOD):
+            if not (
+                C.MIN_ALLOOWABLE_BEAT_PERIOD
+                <= beat_period
+                <= C.MAX_ALLOOWABLE_BEAT_PERIOD
+            ):
                 ValueError(
-                    'Beat period is {beat_period}, but should be between {C.MIN_ALLOOWABLE_BEAT_PERIOD} and {C.MAX_ALLOOWABLE_BEAT_PERIOD}'
+                    "Beat period is {beat_period}, but should be between {C.MIN_ALLOOWABLE_BEAT_PERIOD} and {C.MAX_ALLOOWABLE_BEAT_PERIOD}"
                 )
             self.beat_period = beat_period
             self.rss_kb = None
@@ -120,12 +125,13 @@ class Client:
 
     @valid_states_cmd([State.DISCONNECTED])
     def connect(self) -> bool:
-        self.logger.info(f'Client lifecycle state is {self.state}')
+        self.logger.info(f"Client lifecycle state is {self.state}")
 
-        self.logger.info('Openning connection...')
+        self.logger.info("Openning connection...")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if self.scheme == 'tcp+tls':
+        if self.scheme == "tcp+tls":
             import ssl
+
             context = ssl.SSLContext(ssl.PROTOCOL_TLS)
             self.sock = context.wrap_socket(self.sock, server_hostname=self.host)
 
@@ -137,29 +143,31 @@ class Client:
 
         self._raise_error(msg)
 
-        self.logger.info('Connection to server is successfully established')
+        self.logger.info("Connection to server is successfully established")
         self._set_state(State.NOT_IDENTIFIED)
 
         msg_args = json.loads(msg[3:])
         protocol_version = int(msg_args["v"])
         if protocol_version != 2:
             raise FaktroyWorkProtocolError(
-                f'Only FWP version 2 supported, got {protocol_version}')
+                f"Only FWP version 2 supported, got {protocol_version}"
+            )
 
         password_hash = None
-        if 'i' in msg_args and 's' in msg_args:
-            self.logger.info('Password is required')
+        if "i" in msg_args and "s" in msg_args:
+            self.logger.info("Password is required")
             if not self.password:
-                raise ValueError('Password required but not provided')
-            password_hash_iterations = msg_args['i']
-            password_hash_salt = msg_args['s']
-            self.logger.info('Hashing password...')
-            password_hash = str.encode(str(
-                self.password)) + str.encode(password_hash_salt)
+                raise ValueError("Password required but not provided")
+            password_hash_iterations = msg_args["i"]
+            password_hash_salt = msg_args["s"]
+            self.logger.info("Hashing password...")
+            password_hash = str.encode(str(self.password)) + str.encode(
+                password_hash_salt
+            )
             for _ in range(password_hash_iterations):
                 password_hash = hashlib.sha256(password_hash).digest()
         else:
-            self.logger.info('Password is not required')
+            self.logger.info("Password is not required")
 
         if password_hash:
             _ = self._hello(pwdhash=password_hash.hex())
@@ -180,19 +188,19 @@ class Client:
     def mutate(self, operation: MutateOperation) -> bool:
         return self._mutate(operation.dict(exclude_none=True))
 
-    def queue_remove(self,
-                     queues: Optional[List[Dict]] = None,
-                     all_queues: bool = False) -> bool:
+    def queue_remove(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         return self._queue_remove(queues=queues, all_queues=all_queues)
 
-    def queue_pause(self,
-                    queues: Optional[List[Dict]] = None,
-                    all_queues: bool = False) -> bool:
+    def queue_pause(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         return self._queue_pause(queues=queues, all_queues=all_queues)
 
-    def queue_unpause(self,
-                      queues: Optional[List[Dict]] = None,
-                      all_queues: bool = False) -> bool:
+    def queue_unpause(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         return self._queue_unpause(queues=queues, all_queues=all_queues)
 
     def info(self) -> Dict:
@@ -201,44 +209,43 @@ class Client:
         return json.loads(data)
 
     def _set_state(self, new_state: State) -> bool:
-        if self.role == 'producer' and new_state in [
-                State.QUIET, State.TERMINATING
-        ]:
+        if self.role == "producer" and new_state in [State.QUIET, State.TERMINATING]:
             raise FaktroyWorkProtocolError(
-                f'Producer Client cannot enter {new_state} stage')
+                f"Producer Client cannot enter {new_state} stage"
+            )
 
         old_state = self.state
 
         if old_state == new_state:
-            self.logger.info(f'client state is {old_state}, not changed')
+            self.logger.info(f"client state is {old_state}, not changed")
             return False
 
         self.state = new_state
-        self.logger.info(
-            f'Client state changed from {old_state} to {new_state}')
+        self.logger.info(f"Client state changed from {old_state} to {new_state}")
 
-        if self.role != 'producer':
+        if self.role != "producer":
             # If client acts as consumer, start heartbeating
             # when IDENTIFIED state is entered
             if self.state == State.IDENTIFIED:
                 self.heartbeat_thread = threading.Thread(
-                    target=self._heartbeat, args=())
+                    target=self._heartbeat, args=()
+                )
                 self.heartbeat_thread.start()
 
         return True
 
     def _send(self, command: str):
-        self.sock.send(command.encode('utf-8'))
-        self.logger.debug(f'C: {command}')
+        self.sock.send(command.encode("utf-8"))
+        self.logger.debug(f"C: {command}")
 
     def _receive(self) -> str:
-        msg = self.sock.recv(1024).decode('utf-8')
+        msg = self.sock.recv(1024).decode("utf-8")
 
         while not helper.RESP.is_message_complete(msg):
-            msg += self.sock.recv(1024).decode('utf-8')
+            msg += self.sock.recv(1024).decode("utf-8")
 
         msg = msg.strip()
-        self.logger.debug(f'S: {msg}')
+        self.logger.debug(f"S: {msg}")
         return msg
 
     def _send_and_receive(self, command: str) -> str:
@@ -248,15 +255,16 @@ class Client:
             return msg
 
     def _raise_error(self, faktory_response):
-        if faktory_response[0] == '-':
+        if faktory_response[0] == "-":
             raise FaktroyWorkProtocolError(
-                f'Error received from Faktory server: {faktory_response}')
+                f"Error received from Faktory server: {faktory_response}"
+            )
 
     def _heartbeat(self):
         while self.state in [State.IDENTIFIED, State.QUIET]:
             with self.rlock:
                 self.logger.info(
-                    f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
+                    f"Sending heartbeat to server, next heartbeat in {self.beat_period} seconds"
                 )
                 self._beat(rss_kb=self.rss_kb)
             time.sleep(self.beat_period)
@@ -278,19 +286,21 @@ class Client:
         }
 
         # Required fields for consumers
-        if self.role != 'producer':
-            client_info.update({
-                "hostname": self.host,
-                "wid": self.worker_id,
-                "pid": os.getpid(),
-                "labels": self.labels,
-            })
+        if self.role != "producer":
+            client_info.update(
+                {
+                    "hostname": self.host,
+                    "wid": self.worker_id,
+                    "pid": os.getpid(),
+                    "labels": self.labels,
+                }
+            )
 
         # Required fields for protected server
         if pwdhash:
-            client_info['pwdhash'] = pwdhash
+            client_info["pwdhash"] = pwdhash
 
-        command = f'HELLO {json.dumps(client_info)}{C.CRLF}'
+        command = f"HELLO {json.dumps(client_info)}{C.CRLF}"
         msg = self._send_and_receive(command)
 
         self._raise_error(msg)
@@ -304,14 +314,14 @@ class Client:
         FLUSH allows to clear all info from Faktory's internal database.
         It uses Redis's FLUSHDB command under the covers.
         """
-        command = f'FLUSH{C.CRLF}'
+        command = f"FLUSH{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
 
     @valid_states_cmd([State.IDENTIFIED])
     def _info(self) -> str:
-        command = f'INFO{C.CRLF}'
+        command = f"INFO{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return msg
@@ -322,57 +332,57 @@ class Client:
         The END command is used to signal to the server that it wishes
         to terminate the connection.
         """
-        command = f'END{C.CRLF}'
+        command = f"END{C.CRLF}"
         self._send(command)
         self._set_state(State.END)
 
     @valid_states_cmd([State.IDENTIFIED])
     def _mutate(self, operation: Dict) -> bool:
-        op = json.dumps(operation, separators=(',', ':'))
-        command = f'MUTATE {op}{C.CRLF}'
+        op = json.dumps(operation, separators=(",", ":"))
+        command = f"MUTATE {op}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
 
     @valid_states_cmd([State.IDENTIFIED])
     def _batch_status(self, bid: str) -> str:
-        command = f'BATCH STATUS {bid}{C.CRLF}'
+        command = f"BATCH STATUS {bid}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return msg
 
     @valid_states_cmd([State.IDENTIFIED])
-    def _queue_remove(self,
-                      queues: Optional[List[Dict]] = None,
-                      all_queues: bool = False) -> bool:
+    def _queue_remove(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         if all_queues:
-            command = f'QUEUE REMOVE *{C.CRLF}'
+            command = f"QUEUE REMOVE *{C.CRLF}"
         else:
-            command = f'QUEUE REMOVE {json.dumps(queues)}{C.CRLF}'
+            command = f"QUEUE REMOVE {json.dumps(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
 
     @valid_states_cmd([State.IDENTIFIED])
-    def _queue_pause(self,
-                     queues: Optional[List[Dict]] = None,
-                     all_queues: bool = False) -> bool:
+    def _queue_pause(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         if all_queues:
-            command = f'QUEUE PAUSE *{C.CRLF}'
+            command = f"QUEUE PAUSE *{C.CRLF}"
         else:
-            command = f'QUEUE PAUSE {json.dumps(queues)}{C.CRLF}'
+            command = f"QUEUE PAUSE {json.dumps(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
 
     @valid_states_cmd([State.IDENTIFIED])
-    def _queue_unpause(self,
-                       queues: Optional[List[Dict]] = None,
-                       all_queues: bool = False) -> bool:
+    def _queue_unpause(
+        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+    ) -> bool:
         if all_queues:
-            command = f'QUEUE UNPAUSE *{C.CRLF}'
+            command = f"QUEUE UNPAUSE *{C.CRLF}"
         else:
-            command = f'QUEUE UNPAUSE {json.dumps(queues)}{C.CRLF}'
+            command = f"QUEUE UNPAUSE {json.dumps(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -384,7 +394,7 @@ class Client:
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _push(self, work_unit: Dict) -> bool:
-        command = f'PUSH {json.dumps(work_unit)}{C.CRLF}'
+        command = f"PUSH {json.dumps(work_unit)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -392,7 +402,7 @@ class Client:
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _pushb(self, work_units: List[Dict]) -> str:
-        command = f'PUSHB {json.dumps(work_units)}{C.CRLF}'
+        command = f"PUSHB {json.dumps(work_units)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return msg
@@ -400,7 +410,7 @@ class Client:
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _batch_new(self, batch: Dict) -> str:
-        command = f'BATCH NEW {json.dumps(batch)}{C.CRLF}'
+        command = f"BATCH NEW {json.dumps(batch)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return msg
@@ -408,7 +418,7 @@ class Client:
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _batch_commit(self, bid: str) -> bool:
-        command = f'BATCH COMMIT {bid}{C.CRLF}'
+        command = f"BATCH COMMIT {bid}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -416,7 +426,7 @@ class Client:
     @producer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _batch_open(self, bid: str) -> bool:
-        command = f'BATCH OPEN {bid}{C.CRLF}'
+        command = f"BATCH OPEN {bid}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -443,23 +453,22 @@ class Client:
     @consumer_cmd
     @valid_states_cmd([State.IDENTIFIED, State.QUIET, State.TERMINATING])
     def _ack(self, jid: str) -> bool:
-        args = {'jid': jid}
-        command = f'ACK {json.dumps(args)}{C.CRLF}'
+        args = {"jid": jid}
+        command = f"ACK {json.dumps(args)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
 
     @consumer_cmd
     @valid_states_cmd([State.IDENTIFIED, State.QUIET, State.TERMINATING])
-    def _fail(self, jid: str, errtype: str, message: str,
-              backtrace: List[str]) -> bool:
+    def _fail(self, jid: str, errtype: str, message: str, backtrace: List[str]) -> bool:
         args = {
-            'jid': jid,
-            'errtype': errtype,
-            'message': message,
-            'backtrace': backtrace,
+            "jid": jid,
+            "errtype": errtype,
+            "message": message,
+            "backtrace": backtrace,
         }
-        command = f'FAIL {json.dumps(args)}{C.CRLF}'
+        command = f"FAIL {json.dumps(args)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -468,39 +477,39 @@ class Client:
     @valid_states_cmd([State.IDENTIFIED, State.QUIET])
     def _beat(self, rss_kb: Optional[int] = None) -> bool:
         args: Dict[str, Any] = {
-            'wid': self.worker_id,
+            "wid": self.worker_id,
         }
 
         if self.state == State.QUIET:
-            args['current_state'] = 'quiet'
+            args["current_state"] = "quiet"
         # TODO: check if this meet FWP
         elif self.state == State.TERMINATING:
-            args['current_state'] = 'terminate'
+            args["current_state"] = "terminate"
 
         if rss_kb:
-            args['rss_kb'] = rss_kb
+            args["rss_kb"] = rss_kb
 
-        command = f'BEAT {json.dumps(args)}{C.CRLF}'
+        command = f"BEAT {json.dumps(args)}{C.CRLF}"
         msg = self._send_and_receive(command)
 
         self._raise_error(msg)
 
-        if msg[0] == '+':
-            if msg[1:3] == 'OK':
+        if msg[0] == "+":
+            if msg[1:3] == "OK":
                 return True
         # Bulk String
-        elif msg[0] == '$':
+        elif msg[0] == "$":
             _, data = helper.RESP.parse_bulk_string(msg)
             data = json.loads(data)
-            if data['state'] == 'quiet':
+            if data["state"] == "quiet":
                 self._set_state(State.QUIET)
-            elif data['state'] == 'terminate':
+            elif data["state"] == "terminate":
                 self._set_state(State.TERMINATING)
             else:
                 raise FaktroyWorkProtocolError(
-                    f'Unexpected BEAT response state ({data})')
+                    f"Unexpected BEAT response state ({data})"
+                )
         else:
-            raise FaktroyWorkProtocolError(
-                f'Unexpected BEAT response: ({msg})')
+            raise FaktroyWorkProtocolError(f"Unexpected BEAT response: ({msg})")
 
         return True

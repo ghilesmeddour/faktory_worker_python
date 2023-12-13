@@ -11,24 +11,24 @@ class Job(BaseModel, extra="forbid"):
     jid: str = Field(default_factory=lambda: uuid.uuid4().hex)
     jobtype: str
     args: List[Any]
-    queue: str = 'default'
+    queue: str = "default"
     reserve_for: Annotated[int, Field(ge=60)] = 1800
-    at: str = ''
+    at: str = ""
     retry: Annotated[int, Field(ge=-1)] = 25
     backtrace: Annotated[int, Field(ge=0)] = 5
     custom: Optional[Dict] = None
 
-    @field_validator('at')
+    @field_validator("at")
     def at_is_rfc3339(cls, at):
         if len(at) > 0 and not validate_rfc3339(at):
-            raise ValueError(f'{at} is not RFC3339 valid')
+            raise ValueError(f"{at} is not RFC3339 valid")
         return at
 
 
 class TargetJob(BaseModel, extra="forbid"):
     jobtype: str
     args: List[Any]
-    queue: str = 'default'
+    queue: str = "default"
 
 
 class Batch(BaseModel, extra="forbid"):
@@ -45,20 +45,20 @@ class JobFilter(BaseModel, extra="forbid"):
 
 
 class Cmd(str, Enum):
-    clear = 'clear'
-    kill = 'kill'
-    discard = 'discard'
-    requeue = 'requeue'
+    clear = "clear"
+    kill = "kill"
+    discard = "discard"
+    requeue = "requeue"
 
 
 class Target(str, Enum):
-    retries = 'retries'
-    scheduled = 'scheduled'
-    dead = 'dead'
+    retries = "retries"
+    scheduled = "scheduled"
+    dead = "dead"
 
 
 class MutateOperation(BaseModel):
-    model_config = ConfigDict(use_enum_values=True, extra='forbid')
+    model_config = ConfigDict(use_enum_values=True, extra="forbid")
 
     cmd: Cmd
     target: Target

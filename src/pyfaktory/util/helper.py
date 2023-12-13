@@ -14,13 +14,13 @@ class RESP:
 
     @staticmethod
     def parse_bulk_string(s: str):
-        assert s[0] == '$'
+        assert s[0] == "$"
 
         try:
-            n_bytes, data = s[1:].split('\r\n')
+            n_bytes, data = s[1:].split("\r\n")
             return int(n_bytes), data
         except Exception:
-            return -1, ''
+            return -1, ""
 
     @staticmethod
     def is_message_complete(msg: str):
@@ -30,7 +30,7 @@ class RESP:
         if not msg.endswith(C.CRLF):
             return False
 
-        if msg[0] == '$' and msg[1] != '-':
+        if msg[0] == "$" and msg[1] != "-":
             nb_crlf = 2
         else:
             nb_crlf = 1
@@ -40,6 +40,5 @@ class RESP:
 
 # http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
 def weighted_shuffle(items, weights):
-    order = sorted(range(len(items)),
-                   key=lambda i: random.random()**weights[i])
+    order = sorted(range(len(items)), key=lambda i: random.random() ** weights[i])
     return [items[i] for i in order]
