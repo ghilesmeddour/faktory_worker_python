@@ -2,12 +2,12 @@ import uuid
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Extra, conint, validator
+from pydantic import BaseModel, Field, ConfigDict, conint, field_validator
 from rfc3339_validator import validate_rfc3339
 
 
-class Job(BaseModel, extra=Extra.forbid):
-    jid: str = None
+class Job(BaseModel, extra="forbid"):
+    jid: str = Field(default_factory=lambda: uuid.uuid4().hex)
     jobtype: str
     args: List[Any]
     queue: str = 'default'
@@ -17,31 +17,27 @@ class Job(BaseModel, extra=Extra.forbid):
     backtrace: conint(ge=0) = 5
     custom: Optional[Dict] = None
 
-    @validator('jid', pre=True, always=True)
-    def set_random_jid(cls, jid):
-        return jid or uuid.uuid4().hex
-
-    @validator('at')
+    @field_validator('at')
     def at_is_rfc3339(cls, at):
         if len(at) > 0 and not validate_rfc3339(at):
             raise ValueError(f'{at} is not RFC3339 valid')
         return at
 
 
-class TargetJob(BaseModel, extra=Extra.forbid):
+class TargetJob(BaseModel, extra="forbid"):
     jobtype: str
     args: List[Any]
     queue: str = 'default'
 
 
-class Batch(BaseModel, extra=Extra.forbid):
+class Batch(BaseModel, extra="forbid"):
     parent_bid: Optional[str]
     description: Optional[str]
     success: Optional[TargetJob]
     complete: Optional[TargetJob]
 
 
-class JobFilter(BaseModel, extra=Extra.forbid):
+class JobFilter(BaseModel, extra="forbid"):
     jids: Optional[List[str]]
     regexp: Optional[str]
     jobtype: Optional[str]
@@ -61,10 +57,8 @@ class Target(str, Enum):
 
 
 class MutateOperation(BaseModel):
+    model_config = ConfigDict(use_enum_values=True, extra='forbid')
+
     cmd: Cmd
     target: Target
     filter: Optional[JobFilter] = None
-
-    class Config:
-        use_enum_values = True
-        extra = Extra.forbid
