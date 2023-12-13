@@ -5,5 +5,7 @@ build
 dist
 htmlcov
 .coverage
+coverage.xml
+tests.xml
 .mypy*
 notebooks

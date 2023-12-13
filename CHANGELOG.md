@@ -1,3 +1,9 @@
+## Version 0.2.2 (2023-12-13)
+- Add TLS support (thanks @rgarver)
+- Use Poetry for packaging and dependency management
+- Fix Pydantic warnings
+- Use black instead of yapf
+
 ## Version 0.2.1 (2022-06-08)
 - Add queue remove command ([added in Faktory server v1.6.1](https://github.com/contribsys/faktory/blob/main/Changes.md#161))
 - Add queue pausing commands

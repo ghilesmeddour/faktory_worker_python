@@ -1,30 +1,56 @@
-TESTS_DIR=tests
+default: prepare dead-code-check format isort type-check test coverage
+check-all: prepare dead-code-check format-check type-check test coverage
 
-format:
-	yapf -irp .
+run:
+	poetry run python examples/fproducer.py
+	poetry run python examples/fconsumer.py
+
+.PHONY: prepare
+prepare:
+	poetry update
+	poetry install
 
 dead-code-check:
-	vulture src --min-confidence 70
+	poetry run vulture --min-confidence 70 src tests
 
-test:
-	pytest
+isort:
+	poetry run isort .
 
-import-sort:
-	isort .
+isort-check:
+	poetry run isort -c --df .
+
+format:
+	poetry run black -v .
+
+format-check:
+	poetry run black --diff -v .
 
 type-check:
-	mypy src --ignore-missing-imports
+	poetry run mypy --ignore-missing-imports src
 
-coverage:
-	coverage run --source=src -m pytest
-	coverage report -m
-	coverage html
+test:
+	poetry run python -m pytest -svv
 
+.PHONY: coverage
+coverage: tests.xml coverage.xml
+
+tests.xml:
+	poetry run python -m pytest -svv --junitxml=tests.xml
+
+coverage.xml:
+	poetry run coverage run --source=src -m pytest
+	poetry run coverage report -m
+	poetry run coverage html
+	poetry run coverage xml
+
+.PHONY: build
 build:
-	rm -rf dist
-	python -m pip install --upgrade build
-	python -m build
-	twine check dist/*
+	poetry build
 
 push:
-	twine upload dist/*
+	poetry publish
+
+build-and-push: build push
+
+clean:
+	rm -rf -- dist build htmlcov .coverage coverage.xml tests.xml

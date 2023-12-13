@@ -1,6 +1,39 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+[tool.poetry]
+name = "pyfaktory"
+version = "0.2.2"
+description = "Faktory Client Python (Producer and Consumer/Worker)"
+authors = ["Ghiles Meddour <ghiles.meddour.b@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/ghilesmeddour/faktory_worker_python"
+repository = "https://github.com/ghilesmeddour/faktory_worker_python"
+documentation = "https://github.com/ghilesmeddour/faktory_worker_python"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
 ]
-build-backend = "setuptools.build_meta"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Pebble = "^5.0.5"
+rfc3339-validator = "^0.1.4"
+pydantic = "^2.5.2"
+
+[tool.poetry.extras]
+sentry = ["sentry-sdk"]
+
+[tool.poetry.group.dev.dependencies]
+black = "23.12.0"
+mypy = "^1.7.1"
+coverage = "^7.3.2"
+vulture = "^2.10"
+pytest = "^7.4.3"
+numpy = "^1.26.2"
+xarray = "^2023.12.0"
+twine = "^4.0.2"
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
