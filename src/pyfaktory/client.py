@@ -81,6 +81,7 @@ class Client:
         self.host = parsed_url.hostname
         self.port = parsed_url.port or C.DEFAULT_PORT
         self.password = parsed_url.password
+        self.scheme = parsed_url.scheme
 
         self.sock: socket.socket
         self.timeout = timeout
@@ -123,6 +124,10 @@ class Client:
 
         self.logger.info('Openning connection...')
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if self.scheme == 'tcp+tls':
+            import ssl
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+            self.sock = context.wrap_socket(self.sock, server_hostname=self.host)
 
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.host, self.port))
