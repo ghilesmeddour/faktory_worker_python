@@ -1,10 +1,10 @@
 import uuid
 from enum import Enum
-from typing_extensions import Annotated
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, ConfigDict, conint, field_validator
+from pydantic import BaseModel, ConfigDict, Field, conint, field_validator
 from rfc3339_validator import validate_rfc3339
+from typing_extensions import Annotated
 
 
 class Job(BaseModel, extra="forbid"):
