@@ -1,5 +1,6 @@
 import uuid
 from enum import Enum
+from typing_extensions import Annotated
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, conint, field_validator
@@ -11,10 +12,10 @@ class Job(BaseModel, extra="forbid"):
     jobtype: str
     args: List[Any]
     queue: str = 'default'
-    reserve_for: conint(ge=60) = 1800
+    reserve_for: Annotated[int, Field(ge=60)] = 1800
     at: str = ''
-    retry: conint(ge=-1) = 25
-    backtrace: conint(ge=0) = 5
+    retry: Annotated[int, Field(ge=-1)] = 25
+    backtrace: Annotated[int, Field(ge=0)] = 5
     custom: Optional[Dict] = None
 
     @field_validator('at')
