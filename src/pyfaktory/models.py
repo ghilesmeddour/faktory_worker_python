@@ -2,7 +2,7 @@ import uuid
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, conint, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from rfc3339_validator import validate_rfc3339
 from typing_extensions import Annotated
 
@@ -19,7 +19,9 @@ class Job(BaseModel, extra="forbid"):
     custom: Optional[Dict] = None
 
     @field_validator("at")
+    @classmethod
     def at_is_rfc3339(cls, at):
+        del cls
         if len(at) > 0 and not validate_rfc3339(at):
             raise ValueError(f"{at} is not RFC3339 valid")
         return at
