@@ -391,3 +391,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
 ### PRs
 
 Please, feel free to create pull requests.
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
