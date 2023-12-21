@@ -2,6 +2,7 @@
 name = "pyfaktory"
 version = "0.2.2"
 description = "Faktory Client Python (Producer and Consumer/Worker)"
+license = "MIT"
 authors = ["Ghiles Meddour <ghiles.meddour.b@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/ghilesmeddour/faktory_worker_python"
