@@ -263,8 +263,8 @@ class Client:
     def _heartbeat(self):
         while self.state in [State.IDENTIFIED, State.QUIET]:
             with self.rlock:
-                self.logger.info(
-                    f"Sending heartbeat to server, next heartbeat in {self.beat_period} seconds"
+                self.logger.debug(
+                    f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
                 )
                 self._beat(rss_kb=self.rss_kb)
             time.sleep(self.beat_period)
