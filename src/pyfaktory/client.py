@@ -137,7 +137,7 @@ class Client:
 
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         self.sock.settimeout(self.timeout)
-        
+
         self.sock.connect((self.host, self.port))
 
         # The very first message from server
@@ -266,7 +266,7 @@ class Client:
         while self.state in [State.IDENTIFIED, State.QUIET]:
             with self.rlock:
                 self.logger.debug(
-                    f'Sending heartbeat to server, next heartbeat in {self.beat_period} seconds'
+                    f"Sending heartbeat to server, next heartbeat in {self.beat_period} seconds"
                 )
                 self._beat(rss_kb=self.rss_kb)
             time.sleep(self.beat_period)

@@ -192,7 +192,7 @@ class Consumer:
 
                 if self.pending_tasks_count < self.concurrency:
                     queues_tmp = self.get_queues()
-                    self.logger.debug(f'Fetching from queues: {queues_tmp}')
+                    self.logger.debug(f"Fetching from queues: {queues_tmp}")
                     # If no jobs are found, _fatch will block for up
                     # to 2 seconds on the first queue provided.
                     job = self.client._fetch(queues_tmp)
@@ -231,7 +231,7 @@ class Consumer:
         try:
             self.pool.close()
             self.pool.join(timeout=self.grace_period)
-            self.logger.info(f'End of the grace period. Stopping.')
+            self.logger.info(f"End of the grace period. Stopping.")
         except KeyboardInterrupt:
             self.logger.info("Second KeyboardInterrupt, stopping immediately")
 
