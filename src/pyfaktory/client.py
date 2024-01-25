@@ -135,7 +135,9 @@ class Client:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS)
             self.sock = context.wrap_socket(self.sock, server_hostname=self.host)
 
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         self.sock.settimeout(self.timeout)
+        
         self.sock.connect((self.host, self.port))
 
         # The very first message from server
