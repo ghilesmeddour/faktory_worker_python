@@ -1,3 +1,8 @@
+## Version 0.2.3 (2024-01-25)
+- Enable TCP Keep-Alives (thanks @TurtleSRE)
+- Add MIT license
+- Update logging
+
 ## Version 0.2.2 (2023-12-13)
 - Add TLS support (thanks @rgarver)
 - Use Poetry for packaging and dependency management
