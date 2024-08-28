@@ -360,7 +360,7 @@ class Client:
         if all_queues:
             command = f"QUEUE REMOVE *{C.CRLF}"
         else:
-            command = f"QUEUE REMOVE {json.dumps(queues)}{C.CRLF}"
+            command = f"QUEUE REMOVE {' '.join(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
