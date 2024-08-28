@@ -372,7 +372,7 @@ class Client:
         if all_queues:
             command = f"QUEUE PAUSE *{C.CRLF}"
         else:
-            command = f"QUEUE PAUSE {json.dumps(queues)}{C.CRLF}"
+            command = f"QUEUE PAUSE {' '.join(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -382,9 +382,9 @@ class Client:
         self, queues: Optional[List[Dict]] = None, all_queues: bool = False
     ) -> bool:
         if all_queues:
-            command = f"QUEUE UNPAUSE *{C.CRLF}"
+            command = f"QUEUE RESUME *{C.CRLF}"
         else:
-            command = f"QUEUE UNPAUSE {json.dumps(queues)}{C.CRLF}"
+            command = f"QUEUE RESUME {' '.join(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
