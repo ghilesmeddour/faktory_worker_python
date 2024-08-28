@@ -191,17 +191,17 @@ class Client:
         return self._mutate(operation.dict(exclude_none=True))
 
     def queue_remove(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         return self._queue_remove(queues=queues, all_queues=all_queues)
 
     def queue_pause(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         return self._queue_pause(queues=queues, all_queues=all_queues)
 
     def queue_unpause(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         return self._queue_unpause(queues=queues, all_queues=all_queues)
 
@@ -355,7 +355,7 @@ class Client:
 
     @valid_states_cmd([State.IDENTIFIED])
     def _queue_remove(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         if all_queues:
             command = f"QUEUE REMOVE *{C.CRLF}"
@@ -367,7 +367,7 @@ class Client:
 
     @valid_states_cmd([State.IDENTIFIED])
     def _queue_pause(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         if all_queues:
             command = f"QUEUE PAUSE *{C.CRLF}"
@@ -379,7 +379,7 @@ class Client:
 
     @valid_states_cmd([State.IDENTIFIED])
     def _queue_unpause(
-        self, queues: Optional[List[Dict]] = None, all_queues: bool = False
+        self, queues: Optional[List[str]] = None, all_queues: bool = False
     ) -> bool:
         if all_queues:
             command = f"QUEUE RESUME *{C.CRLF}"
