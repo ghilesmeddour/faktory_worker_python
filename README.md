@@ -338,6 +338,23 @@ with Client(faktory_url='tcp://localhost:7419') as client:
     print(resp)
 ```
 
+### Outer multiprocessing
+
+You can use outer multiprocessing.
+
+```python
+def run_worker():
+    try:
+        with Client(faktory_url=faktory_server_url, role='consumer') as client:
+            import multiprocessing
+            custom_context = multiprocessing.get_context("spawn")
+            consumer = Consumer(client=client, queues=['t_test'], concurrency=2, context=custom_context)
+            consumer.register('task_001', task_001)
+            consumer.run()
+    except Exception as e:
+        print(f"task running error: {str(e)}")
+```
+
 ## Example
 
 Find examples in `./examples`.
