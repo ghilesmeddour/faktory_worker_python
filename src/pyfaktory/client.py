@@ -249,11 +249,10 @@ class Client:
             msg += chunk
             if helper.RESP.is_message_complete(msg.decode("utf-8", errors="ignore")):
                 break
-        
+
         decoded_msg = msg.decode("utf-8").strip()
         self.logger.debug(f"S: {decoded_msg}")
         return decoded_msg
-    
 
     def _send_and_receive(self, command: str) -> str:
         with self.rlock:
