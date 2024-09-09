@@ -1,3 +1,7 @@
+## Version 0.2.5 (2024-09-09)
+- Add outer multiprocessing (thanks @wangsrGit119)
+- Fix incomplete UTF-8 characters parsing (thanks @wangsrGit119) 
+
 ## Version 0.2.4 (2024-08-28)
 - Fix queue Pause and Resume (thanks @wangsrGit119)
 
