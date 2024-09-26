@@ -186,6 +186,7 @@ class Client:
         self.logger.info("Disconnecting...")
         self.sock.close()
         self._set_state(State.DISCONNECTED)
+        raise Exception("Disconnecting...")
 
     def mutate(self, operation: MutateOperation) -> bool:
         return self._mutate(operation.dict(exclude_none=True))
