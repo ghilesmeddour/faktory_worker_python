@@ -262,6 +262,9 @@ class Client:
             return msg
 
     def _raise_error(self, faktory_response):
+        if not faktory_response:
+            raise Exception("Empty response")
+            
         if faktory_response[0] == "-":
             raise FaktroyWorkProtocolError(
                 f"Error received from Faktory server: {faktory_response}"
