@@ -447,6 +447,9 @@ class Client:
         command = f'FETCH {" ".join(queues)}{C.CRLF}'
         msg = self._send_and_receive(command)
 
+        if not msg:
+            return None
+
         self._raise_error(msg)
 
         n_bytes, data = helper.RESP.parse_bulk_string(msg)
