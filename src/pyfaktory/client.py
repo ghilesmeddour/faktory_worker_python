@@ -188,7 +188,7 @@ class Client:
         self._set_state(State.DISCONNECTED)
 
     def mutate(self, operation: MutateOperation) -> bool:
-        return self._mutate(operation.dict(exclude_none=True))
+        return self._mutate(operation.model_dump(exclude_none=True))
 
     def queue_remove(
         self, queues: Optional[List[str]] = None, all_queues: bool = False
