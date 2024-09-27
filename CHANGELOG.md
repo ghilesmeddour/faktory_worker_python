@@ -1,3 +1,7 @@
+## Version 0.2.6 (2024-09-27)
+- Fix Pydantic warnings (thanks @conanjen)
+- Fix implicit optional
+
 ## Version 0.2.5 (2024-09-09)
 - Add outer multiprocessing (thanks @wangsrGit119)
 - Fix incomplete UTF-8 characters parsing (thanks @wangsrGit119) 
