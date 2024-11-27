@@ -127,8 +127,13 @@ class Client:
     def connect(self) -> bool:
         self.logger.info(f"Client lifecycle state is {self.state}")
 
-        self.logger.info("Openning connection...")
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.logger.info("Opening connection...")
+        if socket.has_dualstack_ipv6():
+            self.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            self.sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        else:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         if self.scheme == "tcp+tls":
             import ssl
 
@@ -261,10 +266,9 @@ class Client:
             return msg
 
     def _raise_error(self, faktory_response):
-        if faktory_response[0] == "-":
-            raise FaktroyWorkProtocolError(
-                f"Error received from Faktory server: {faktory_response}"
-            )
+        if not faktory_response or faktory_response[0] == "-":
+            error_msg = "Empty response (Server closed connection)" if not faktory_response else faktory_response
+            raise FaktroyWorkProtocolError(f"Error received from Faktory server: {error_msg}")
 
     def _heartbeat(self):
         while self.state in [State.IDENTIFIED, State.QUIET]:
