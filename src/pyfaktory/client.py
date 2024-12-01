@@ -267,8 +267,14 @@ class Client:
 
     def _raise_error(self, faktory_response):
         if not faktory_response or faktory_response[0] == "-":
-            error_msg = "Empty response (Server closed connection)" if not faktory_response else faktory_response
-            raise FaktroyWorkProtocolError(f"Error received from Faktory server: {error_msg}")
+            error_msg = (
+                "Empty response (Server closed connection)"
+                if not faktory_response
+                else faktory_response
+            )
+            raise FaktroyWorkProtocolError(
+                f"Error received from Faktory server: {error_msg}"
+            )
 
     def _heartbeat(self):
         while self.state in [State.IDENTIFIED, State.QUIET]:
