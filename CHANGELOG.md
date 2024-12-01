@@ -1,3 +1,6 @@
+## Version 0.2.7 (2024-12-01)
+- Add IPv6 support (thanks @ebramanti)
+
 ## Version 0.2.6 (2024-09-27)
 - Fix Pydantic warnings (thanks @conanjen)
 - Fix implicit optional
