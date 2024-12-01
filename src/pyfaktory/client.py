@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 from .models import MutateOperation
 from .util import constants as C
 from .util import helper
-from .util.decorators import *
+from .util.decorators import consumer_cmd, producer_cmd, valid_states_cmd
 from .util.enums import State
 from .util.exceptions import FaktroyWorkProtocolError
 
