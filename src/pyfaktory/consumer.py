@@ -214,6 +214,7 @@ class Consumer:
                         future.add_done_callback(self.task_done)
                     else:
                         self.logger.debug("Queues are empty.")
+                        time.sleep(0.1)
                 else:
                     # TODO: maybe use Event object instead of sleep
                     time.sleep(0.1)
