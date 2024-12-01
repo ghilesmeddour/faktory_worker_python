@@ -97,7 +97,7 @@ class Client:
 
             if worker_id is None:
                 self.logger.warning(
-                    f"No worker id has been given, a random id will be used"
+                    "No worker id has been given, a random id will be used"
                 )
             elif len(worker_id) < 8:
                 raise ValueError("Worker id must be a string of at least 8 characters")
