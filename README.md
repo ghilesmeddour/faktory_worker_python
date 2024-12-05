@@ -88,7 +88,7 @@ Import `pyfaktory`.
 from pyfaktory import Client, Consumer, Job, Producer
 ```
 
-A single client can act as both a consumer and a producer.
+A single client can act as both a consumer and a producer. (You can enable IPv6 by setting `enable_ipv6` to `True`)
 
 ```python
 client = Client(faktory_url='tcp://localhost:7419')

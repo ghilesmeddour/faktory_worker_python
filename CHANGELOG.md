@@ -1,3 +1,6 @@
+## Version 0.2.8 (2024-12-05)
+- Add optional IPv6 support parameter (thanks @wangsrGit119) #18
+
 ## Version 0.2.7 (2024-12-01)
 - Add IPv6 support (thanks @ebramanti)
 
