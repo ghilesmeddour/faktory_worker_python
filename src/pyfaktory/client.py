@@ -67,6 +67,7 @@ class Client:
         worker_id: Optional[str] = None,
         labels: List[str] = C.DEFAULT_LABELS,
         beat_period: int = C.RECOMMENDED_BEAT_PERIOD,
+        enable_ipv6: bool = False,
     ) -> None:
         self.logger = logging.getLogger(name="FaktoryClient")
 
@@ -75,6 +76,7 @@ class Client:
                 f"Unexpected role ({role}), role should be 'consumer', 'producer' or 'both'"
             )
         self.role = role
+        self.enable_ipv6 = enable_ipv6
 
         if not faktory_url:
             faktory_url = os.environ.get("FAKTORY_URL", C.DEFAULT_FAKTORY_URL)
@@ -128,7 +130,7 @@ class Client:
         self.logger.info(f"Client lifecycle state is {self.state}")
 
         self.logger.info("Opening connection...")
-        if socket.has_dualstack_ipv6():
+        if socket.has_dualstack_ipv6() and self.enable_ipv6:
             self.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             self.sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
         else:
