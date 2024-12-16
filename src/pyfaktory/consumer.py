@@ -64,7 +64,7 @@ class Consumer:
         concurrency: int = 4,
         grace_period: int = C.DEFAULT_GRACE_PERIOD,
         sentry_capture_exception: bool = False,
-        context: Optional[multiprocessing.context.BaseContext] = None,
+        context: Optional[multiprocessing.context.BaseContext] = multiprocessing,
     ) -> None:
         self.logger = logging.getLogger(name="FaktoryConsumer")
 
