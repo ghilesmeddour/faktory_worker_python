@@ -1,3 +1,6 @@
+## Version 0.2.9 (2024-12-16)
+- Set default Consumer context to multiprocessing (thanks @michaelrigart) #19
+
 ## Version 0.2.8 (2024-12-05)
 - Add optional IPv6 support parameter (thanks @wangsrGit119) #18
 
