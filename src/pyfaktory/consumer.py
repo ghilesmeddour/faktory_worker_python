@@ -5,7 +5,7 @@ import signal
 import sys
 import time
 import traceback
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from pebble import ProcessPool, sighandler
 
@@ -97,7 +97,7 @@ class Consumer:
 
         self.pool = ProcessPool(max_workers=self.concurrency, context=self.context)
 
-        self.job_handlers: Dict[str, Callable] = {}
+        self.job_handlers: Dict[str, Tuple[Callable, bool]] = {}
 
         self.pending_tasks_count = 0
         self.lock_pending_tasks_count = multiprocessing.Lock()
@@ -106,17 +106,19 @@ class Consumer:
     def handle_sigterm(*_):
         raise KeyboardInterrupt
 
-    def register(self, name: str, fn: Callable):
+    def register(self, name: str, fn: Callable, bind: bool = False):
         """
         Register a handler for the given jobtype.
+
+        If you set bind=True, then the first argument passed to the function will always be Faktory's `jid` for this task.
 
         It is expected that all jobtypes are registered upon process
         startup.
         """
-        self.job_handlers[name] = fn
+        self.job_handlers[name] = (fn, bind)
         self.logger.info(f"Registered handler for jobtype: {name}")
 
-    def get_job_handler(self, name: str) -> Callable:
+    def get_job_handler(self, name: str) -> Tuple[Callable, bool]:
         try:
             return self.job_handlers[name]
         except KeyError:
@@ -202,9 +204,12 @@ class Consumer:
                     if job:
                         # TODO: check
                         # timeout=job.get('reserve_for', None)
-                        job_handler = self.get_job_handler(job.get("jobtype"))
+                        (job_handler, bind) = self.get_job_handler(job.get("jobtype"))
+                        args = job.get("args")
+                        if bind:
+                            args = [job.get("jid"), *args]
 
-                        future = self.pool.schedule(job_handler, args=job.get("args"))
+                        future = self.pool.schedule(job_handler, args=args)
 
                         with self.lock_pending_tasks_count:
                             self.pending_tasks_count += 1
