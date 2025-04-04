@@ -1,3 +1,6 @@
+## Version 0.2.10 (2025-04-04)
+- Allow Job ID to be passed to registered job (thanks @ebramanti) #21
+
 ## Version 0.2.9 (2024-12-16)
 - Set default Consumer context to multiprocessing (thanks @michaelrigart) #19
 
