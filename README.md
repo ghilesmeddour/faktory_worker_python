@@ -71,7 +71,7 @@ The format of the Faktory URL is as follows:
 tcp://:password@localhost:7419
 ```
 
-You can access the [Fakotry GUI](http://localhost:7420/).
+You can access the [Faktory GUI](http://localhost:7420/).
 
 To run Faktory in production:
 ```
