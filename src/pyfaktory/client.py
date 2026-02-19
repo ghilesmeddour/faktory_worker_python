@@ -244,7 +244,7 @@ class Client:
         return True
 
     def _send(self, command: str):
-        self.sock.send(command.encode("utf-8"))
+        self.sock.sendall(command.encode("utf-8"))
         self.logger.debug(f"C: {command}")
 
     def _receive(self) -> str:
