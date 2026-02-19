@@ -10,7 +10,7 @@ repository = "https://github.com/ghilesmeddour/faktory_worker_python"
 documentation = "https://github.com/ghilesmeddour/faktory_worker_python"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent"
+    "Operating System :: OS Independent",
 ]
 
 [tool.poetry.dependencies]
