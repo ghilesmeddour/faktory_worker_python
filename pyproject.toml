@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyfaktory"
-version = "0.2.10"
+version = "0.2.11"
 description = "Faktory Client Python (Producer and Consumer/Worker)"
 license = "MIT"
 authors = ["Ghiles Meddour <ghiles.meddour.b@gmail.com>"]

@@ -1,3 +1,7 @@
+## Version 0.2.11 (2026-02-20)
+
+- Fix deadlock on large payloads by using `socket.sendall()` (thanks @stavxyz) #24
+
 ## Version 0.2.10 (2025-04-04)
 
 - Allow Job ID to be passed to registered job (thanks @ebramanti) #21
