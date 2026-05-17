@@ -28,7 +28,9 @@ class Producer:
 
     def push_bulk(self, jobs: List[Job]) -> Dict:
         msg = self.client._pushb([j.model_dump(exclude_none=True) for j in jobs])
-        _, data = helper.RESP.parse_bulk_string(msg)
+        n_bytes, data = helper.RESP.parse_bulk_string(msg)
+        if n_bytes == -1:
+            return {}
         return json.loads(data)
 
     def batch_new(self, batch: Batch) -> bool:
