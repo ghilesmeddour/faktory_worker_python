@@ -1,3 +1,7 @@
+## Version 0.2.13 (2026-05-17)
+
+- Handle null bulk string in `push_bulk` to avoid JSONDecodeError (thanks @vishal-seshagiri-infinitusai) #26
+
 ## Version 0.2.11 (2026-02-20)
 
 - Fix deadlock on large payloads by using `socket.sendall()` (thanks @stavxyz) #24
