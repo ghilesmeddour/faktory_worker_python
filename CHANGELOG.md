@@ -1,3 +1,11 @@
+## Version 0.2.14 (2026-10-29)
+
+- Send the client hostname instead of the server host in `HELLO` (thanks @gauravloj) #27
+- Add optional `hostname` parameter to `Client`
+- Fix `sentry` extra, which did not install `sentry-sdk`
+- Raise `ValueError` when queue commands get neither `queues` nor `all_queues=True`
+- Use uv instead of Poetry and ruff instead of black/isort
+
 ## Version 0.2.13 (2026-05-17)
 
 - Handle null bulk string in `push_bulk` to avoid JSONDecodeError (thanks @vishal-seshagiri-infinitusai) #26

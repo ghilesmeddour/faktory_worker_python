@@ -1744,7 +1744,7 @@ wheels = [
 
 [[package]]
 name = "pyfaktory"
-version = "0.2.13"
+version = "0.2.14"
 source = { editable = "." }
 dependencies = [
     { name = "pebble", version = "5.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
