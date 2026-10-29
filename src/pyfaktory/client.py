@@ -56,6 +56,10 @@ class Client:
     enable_ipv6 : bool, default False
         Connect to the server over IPv6 when the system supports dual-stack
         sockets.
+    hostname : Optional[str]
+        Hostname of the worker using this client, displayed in Faktory webui.
+        If not given, the hostname of the machine is used.
+        If the client's role is `producer`, this argument is ignored.
 
     Notes
     -----
@@ -71,6 +75,7 @@ class Client:
         labels: List[str] = C.DEFAULT_LABELS,
         beat_period: int = C.RECOMMENDED_BEAT_PERIOD,
         enable_ipv6: bool = False,
+        hostname: Optional[str] = None,
     ) -> None:
         self.logger = logging.getLogger(name="FaktoryClient")
 
@@ -99,6 +104,7 @@ class Client:
         # Consumer specific fields
         if self.role != "producer":
             self.labels = labels
+            self.hostname = hostname or socket.gethostname()
 
             if worker_id is None:
                 self.logger.warning(
@@ -310,7 +316,7 @@ class Client:
         if self.role != "producer":
             client_info.update(
                 {
-                    "hostname": socket.gethostname(),
+                    "hostname": self.hostname,
                     "wid": self.worker_id,
                     "pid": os.getpid(),
                     "labels": self.labels,
