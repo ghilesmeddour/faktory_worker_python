@@ -5,7 +5,8 @@ import signal
 import sys
 import time
 import traceback
-from typing import Callable, Dict, List, Optional, Tuple
+from types import ModuleType
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from pebble import ProcessPool, sighandler
 
@@ -64,7 +65,9 @@ class Consumer:
         concurrency: int = 4,
         grace_period: int = C.DEFAULT_GRACE_PERIOD,
         sentry_capture_exception: bool = False,
-        context: multiprocessing.context.BaseContext = multiprocessing,
+        context: Union[
+            ModuleType, multiprocessing.context.BaseContext
+        ] = multiprocessing,
     ) -> None:
         self.logger = logging.getLogger(name="FaktoryConsumer")
 

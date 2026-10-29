@@ -384,8 +384,10 @@ class Client:
     ) -> bool:
         if all_queues:
             command = f"QUEUE REMOVE *{C.CRLF}"
-        else:
+        elif queues:
             command = f"QUEUE REMOVE {' '.join(queues)}{C.CRLF}"
+        else:
+            raise ValueError("Either queues or all_queues=True must be given")
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -396,8 +398,10 @@ class Client:
     ) -> bool:
         if all_queues:
             command = f"QUEUE PAUSE *{C.CRLF}"
-        else:
+        elif queues:
             command = f"QUEUE PAUSE {' '.join(queues)}{C.CRLF}"
+        else:
+            raise ValueError("Either queues or all_queues=True must be given")
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
@@ -408,8 +412,10 @@ class Client:
     ) -> bool:
         if all_queues:
             command = f"QUEUE RESUME *{C.CRLF}"
-        else:
+        elif queues:
             command = f"QUEUE RESUME {' '.join(queues)}{C.CRLF}"
+        else:
+            raise ValueError("Either queues or all_queues=True must be given")
         msg = self._send_and_receive(command)
         self._raise_error(msg)
         return True
