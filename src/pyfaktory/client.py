@@ -465,7 +465,7 @@ class Client:
     @consumer_cmd
     @valid_states_cmd([State.IDENTIFIED])
     def _fetch(self, queues: List[str] = []) -> Optional[Dict]:
-        command = f'FETCH {" ".join(queues)}{C.CRLF}'
+        command = f"FETCH {' '.join(queues)}{C.CRLF}"
         msg = self._send_and_receive(command)
 
         self._raise_error(msg)
