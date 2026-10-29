@@ -1,56 +1,39 @@
-default: prepare dead-code-check format lint type-check test coverage
-check-all: prepare dead-code-check format-check lint-check type-check test coverage
+.PHONY: all format check test coverage upgrade build publish run clean
 
-run:
-	uv run python examples/fproducer.py
-	uv run python examples/fconsumer.py
-
-.PHONY: prepare
-prepare:
-	uv lock --upgrade
-	uv sync
-
-dead-code-check:
-	uv run vulture --min-confidence 70 src tests
-
-lint:
-	uv run ruff check --fix .
-
-lint-check:
-	uv run ruff check .
+all: format check
 
 format:
+	uv run ruff check --fix .
 	uv run ruff format .
 
-format-check:
+check:
+	uv run ruff check .
 	uv run ruff format --diff .
-
-type-check:
 	uv run mypy --ignore-missing-imports src
+	uv run vulture --min-confidence 70 src tests
+	uv run pytest
 
 test:
-	uv run python -m pytest -svv
+	uv run pytest -svv
 
-.PHONY: coverage
-coverage: tests.xml coverage.xml
-
-tests.xml:
-	uv run python -m pytest -svv --junitxml=tests.xml
-
-coverage.xml:
-	uv run coverage run --source=src -m pytest
+coverage:
+	uv run coverage run --source=src -m pytest --junitxml=tests.xml
 	uv run coverage report -m
 	uv run coverage html
 	uv run coverage xml
 
-.PHONY: build
+upgrade:
+	uv lock --upgrade
+
 build:
 	uv build
 
-push:
+publish: clean build
 	uv publish
 
-build-and-push: build push
+run:
+	uv run python examples/fproducer.py
+	uv run python examples/fconsumer.py
 
 clean:
 	rm -rf -- dist build htmlcov .coverage coverage.xml tests.xml
