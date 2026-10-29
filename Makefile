@@ -1,54 +1,54 @@
-default: prepare dead-code-check format isort type-check test coverage
-check-all: prepare dead-code-check format-check type-check test coverage
+default: prepare dead-code-check format lint type-check test coverage
+check-all: prepare dead-code-check format-check lint-check type-check test coverage
 
 run:
-	poetry run python examples/fproducer.py
-	poetry run python examples/fconsumer.py
+	uv run python examples/fproducer.py
+	uv run python examples/fconsumer.py
 
 .PHONY: prepare
 prepare:
-	poetry update
-	poetry install
+	uv lock --upgrade
+	uv sync
 
 dead-code-check:
-	poetry run vulture --min-confidence 70 src tests
+	uv run vulture --min-confidence 70 src tests
 
-isort:
-	poetry run isort .
+lint:
+	uv run ruff check --fix .
 
-isort-check:
-	poetry run isort -c --df .
+lint-check:
+	uv run ruff check .
 
 format:
-	poetry run black -v .
+	uv run ruff format .
 
 format-check:
-	poetry run black --diff -v .
+	uv run ruff format --diff .
 
 type-check:
-	poetry run mypy --ignore-missing-imports src
+	uv run mypy --ignore-missing-imports src
 
 test:
-	poetry run python -m pytest -svv
+	uv run python -m pytest -svv
 
 .PHONY: coverage
 coverage: tests.xml coverage.xml
 
 tests.xml:
-	poetry run python -m pytest -svv --junitxml=tests.xml
+	uv run python -m pytest -svv --junitxml=tests.xml
 
 coverage.xml:
-	poetry run coverage run --source=src -m pytest
-	poetry run coverage report -m
-	poetry run coverage html
-	poetry run coverage xml
+	uv run coverage run --source=src -m pytest
+	uv run coverage report -m
+	uv run coverage html
+	uv run coverage xml
 
 .PHONY: build
 build:
-	poetry build
+	uv build
 
 push:
-	poetry publish
+	uv publish
 
 build-and-push: build push
 
