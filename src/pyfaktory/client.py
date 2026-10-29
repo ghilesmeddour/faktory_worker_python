@@ -307,7 +307,7 @@ class Client:
         if self.role != "producer":
             client_info.update(
                 {
-                    "hostname": self.host,
+                    "hostname": socket.gethostname(),
                     "wid": self.worker_id,
                     "pid": os.getpid(),
                     "labels": self.labels,
