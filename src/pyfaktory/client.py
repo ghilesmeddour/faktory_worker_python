@@ -53,6 +53,9 @@ class Client:
     beat_period : int, default 15
         The period in seconds for sending BEAT to the server to recognize state
         changes initiated by the server. Period must be between 5 and 60 seconds.
+    enable_ipv6 : bool, default False
+        Connect to the server over IPv6 when the system supports dual-stack
+        sockets.
 
     Notes
     -----
