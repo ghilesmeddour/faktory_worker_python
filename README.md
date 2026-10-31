@@ -90,6 +90,8 @@ from pyfaktory import Client, Consumer, Job, Producer
 
 A single client can act as both a consumer and a producer. (You can enable IPv6 by setting `enable_ipv6` to `True`)
 
+A consumer client reports the hostname of the machine to the server, which is displayed in the Faktory webui. You can override it with the `hostname` argument.
+
 ```python
 client = Client(faktory_url='tcp://localhost:7419')
 client.connect()

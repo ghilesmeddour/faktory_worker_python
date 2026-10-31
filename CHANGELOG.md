@@ -1,3 +1,9 @@
+## Unreleased
+
+- Drop support for Python 3.9 and 3.10 (end of life), Python 3.11 or later is now required
+- Raise `ValueError` when `beat_period` is outside 5-60 seconds (the check was silently ignored)
+- Require `sentry-sdk` 2.x for the `sentry` extra
+
 ## Version 0.2.14 (2026-10-29)
 
 - Send the client hostname instead of the server host in `HELLO` (thanks @gauravloj) #27

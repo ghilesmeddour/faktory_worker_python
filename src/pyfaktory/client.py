@@ -120,8 +120,8 @@ class Client:
                 <= beat_period
                 <= C.MAX_ALLOOWABLE_BEAT_PERIOD
             ):
-                ValueError(
-                    "Beat period is {beat_period}, but should be between {C.MIN_ALLOOWABLE_BEAT_PERIOD} and {C.MAX_ALLOOWABLE_BEAT_PERIOD}"
+                raise ValueError(
+                    f"Beat period is {beat_period}, but should be between {C.MIN_ALLOOWABLE_BEAT_PERIOD} and {C.MAX_ALLOOWABLE_BEAT_PERIOD}"
                 )
             self.beat_period = beat_period
             self.rss_kb = None
