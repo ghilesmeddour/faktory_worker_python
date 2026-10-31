@@ -93,9 +93,6 @@ class TestClientConstructor:
         client_consumer = Client(role="consumer")
         client_producer = Client(role="producer")
 
-        print(client_both.__dict__.keys())
-        print()
-        print(consumer_specific_fields)
         assert consumer_specific_fields.issubset(client_both.__dict__)
         assert consumer_specific_fields.issubset(client_consumer.__dict__)
         assert not consumer_specific_fields.issubset(client_producer.__dict__)
