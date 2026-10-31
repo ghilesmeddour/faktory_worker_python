@@ -407,9 +407,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
 /usr/bin/faktory -l debug
 ```
 
-### PRs
+## Sponsors
 
-Please, feel free to create pull requests.
+<a href="https://motjuste.fr/?utm_source=pyfaktory&utm_medium=badge&utm_campaign=pyfaktory-readme" target="_blank" title="Mot juste : dictionnaire de rimes, de synonymes et de conjugaison"><img src="https://raw.githubusercontent.com/ghilesmeddour/faktory_worker_python/main/docs/sponsors/motjuste.png" alt="Mot juste" width="240"></a>
 
 ## License
 
