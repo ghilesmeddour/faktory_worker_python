@@ -1,6 +1,6 @@
 [project]
 name = "pyfaktory"
-version = "0.2.14"
+version = "0.3.0"
 description = "Faktory Client Python (Producer and Consumer/Worker)"
 license = "MIT"
 license-files = ["LICENSE.md"]

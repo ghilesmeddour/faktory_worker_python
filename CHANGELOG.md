@@ -1,4 +1,4 @@
-## Unreleased
+## Version 0.3.0 (2026-10-31)
 
 - Drop support for Python 3.9 and 3.10 (end of life), Python 3.11 or later is now required
 - Raise `ValueError` when `beat_period` is outside 5-60 seconds (the check was silently ignored)
